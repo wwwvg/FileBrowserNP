@@ -4,19 +4,48 @@
              xmlns:local="clr-namespace:FileBrowserNP.Models">
     
     <Application.Resources>
-        <DataTemplate DataType="{x:Type local:Drive}">
-            <Border Margin="3" BorderThickness="1" BorderBrush="SteelBlue"
-                  CornerRadius="4">
+        <DataTemplate x:Key="DriveTemplate">
+            <Grid Margin="3">
+                <!--<Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>-->
+                
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="./Icons/HardDrive.png" MaxHeight="15"></Image>
+                    <TextBlock Text="{Binding Name}" Margin="5,0,0,0"></TextBlock>
+                </StackPanel>
+                <!--<TextBlock Grid.Column="1" Text="{Binding Label}" Margin="5,0,0,0"></TextBlock>
+                <TextBlock Grid.Column="2" Text="{Binding FreeSpace}" Margin="5,0,0,0"></TextBlock>
+                <TextBlock Grid.Column="3" Text="{Binding TotalSpace}" Margin="5,0,0,0"></TextBlock>-->
+            </Grid>
+        </DataTemplate>
+        <!--<ControlTemplate x:Key="DriveHeaderTemplate">
+            <Grid Margin="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Диск" Margin="5,0,0,0"></TextBlock>
+                <TextBlock Grid.Column="0" Text="Память" Margin="5,0,0,0"></TextBlock>
+            </Grid>
+        </ControlTemplate>-->
+
+        <DataTemplate x:Key="FolderTemplate">
+            <Border Margin="5" BorderThickness="1" BorderBrush="SteelBlue" Background="LightYellow" CornerRadius="4">
                 <Grid Margin="3">
-                    <Grid.RowDefinitions>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Image Source="{Binding Path=DiskImage}"></Image>
-                    <TextBlock Grid.Row="1" Text="{Binding Path=Name}"></TextBlock>
+                    <TextBlock Text="{Binding Path=Name}"></TextBlock>
                 </Grid>
             </Border>
         </DataTemplate>
+        <GridView x:Key="DriveHeaderTemplate">
+            <GridView.Columns>
+                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=Name}" />
+                <GridViewColumn Header="Label" DisplayMemberBinding="{Binding Path=Label}" />
+            </GridView.Columns>
+        </GridView>
     </Application.Resources>
     
 </Application>

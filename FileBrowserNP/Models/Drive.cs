@@ -8,7 +8,8 @@ namespace FileBrowserNP.Models
 {
     public class Drive : Base
     {
-        public int FreeSpace { get; set; }
-        public int TotalSpace { get; set; }
+        public string Label { get; set; }
+        public string FreeSpace { get; set; }
+        public string TotalSpace { get; set; }
     }
 }

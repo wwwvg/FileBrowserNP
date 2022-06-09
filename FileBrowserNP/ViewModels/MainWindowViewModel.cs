@@ -22,6 +22,13 @@ namespace FileBrowserNP.ViewModels
             SetDrives();
         }
 
+        private ObservableCollection<Base> _files = new(); // список дисков, файлов и каталогов
+        public ObservableCollection<Base> Files
+        {
+            get => _files;
+            set => SetProperty(ref _files, value);
+        }
+
         private void SetDrives()
         {
             try
@@ -35,11 +42,12 @@ namespace FileBrowserNP.ViewModels
                 foreach (var drive in drives) //добавляем их в ComboBox
                 {
 
-                    _files.Add(new Drive()
+                    Files.Add(new Drive()
                     {
-                        Name = $"{drive.Name} ",
-                        FreeSpace = int.Parse(Bytes.SizeSuffix(drive.TotalFreeSpace)),
-                        TotalSpace = int.Parse(Bytes.SizeSuffix(drive.TotalSize))
+                        Name = drive.Name,
+                        Label = drive.VolumeLabel,
+                        FreeSpace = Bytes.SizeSuffix(drive.TotalFreeSpace),
+                        TotalSpace = Bytes.SizeSuffix(drive.TotalSize)
                     });
                 }
             }
@@ -49,12 +57,7 @@ namespace FileBrowserNP.ViewModels
             }
         }
 
-        private ObservableCollection<Base> _files = new(); // список дисков, файлов и каталогов
-        public ObservableCollection<Base> Files       
-        {
-            get => _files;
-            set => SetProperty(ref _files, value);
-        }
+        
 
         private void OnLoadImageView()
         {
