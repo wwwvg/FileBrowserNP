@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FileBrowserNP"
         mc:Ignorable="d"
         Title="{Binding Title}" Icon="./Icons/Browser.png" Height="800" Width="1200" WindowStartupLocation="CenterScreen">
-
+    
     <DockPanel>
         <ToolBar DockPanel.Dock="Top"/>
         <StatusBar DockPanel.Dock="Bottom"/>
@@ -17,12 +17,41 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <ContentControl Grid.Row="0"/>
-                <ContentControl Grid.Row="1"/>
+                <ListView ItemsSource="{Binding Files}" Grid.Row="1" Margin="5" PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"
+                    SelectedItem="{Binding SelectedFile}"
+                    SelectedIndex="{Binding SelectedIndex}">
+                    <ListView.View>
+
+                        <GridView>
+                            <GridViewColumn Header="Имя">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Path=Icon}" MaxHeight="15"></Image>
+                                            <TextBlock Text="{Binding Name}" Margin="5,0,0,0"></TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Размер" DisplayMemberBinding="{Binding Size}"/>
+                            <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding TimeCreated}"/>
+                        </GridView>
+                    </ListView.View>
+
+
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <prism:InvokeCommandAction Command="{Binding SelectedCommandListView}"
+                                                CommandParameter="{Binding SelectedFile, Mode=TwoWay}" />
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <prism:InvokeCommandAction Command="{Binding DoubleClicked}"
+                                                CommandParameter="{Binding SelectedFile, Mode=TwoWay}"
+                                               />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                </ListView>
             </Grid>
             <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             <ContentControl Grid.Column="2"/>
