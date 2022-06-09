@@ -7,4 +7,46 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Icons\AddFolder.png" />
+    <None Remove="Icons\Back.png" />
+    <None Remove="Icons\Bin.png" />
+    <None Remove="Icons\Browser.png" />
+    <None Remove="Icons\Cfg.png" />
+    <None Remove="Icons\Delete.ico" />
+    <None Remove="Icons\DeleteItem.png" />
+    <None Remove="Icons\Folder.png" />
+    <None Remove="Icons\HardDrive.png" />
+    <None Remove="Icons\Image.png" />
+    <None Remove="Icons\Refresh.png" />
+    <None Remove="Icons\Text.png" />
+    <None Remove="Icons\Warning.png" />
+    <None Remove="Icons\Warning2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\AddFolder.png" />
+    <Resource Include="Icons\Back.png" />
+    <Resource Include="Icons\Bin.png" />
+    <Resource Include="Icons\Browser.png" />
+    <Resource Include="Icons\Cfg.png" />
+    <Resource Include="Icons\Delete.ico" />
+    <Resource Include="Icons\DeleteItem.png" />
+    <Resource Include="Icons\Folder.png" />
+    <Resource Include="Icons\HardDrive.png" />
+    <Resource Include="Icons\Image.png" />
+    <Resource Include="Icons\Refresh.png" />
+    <Resource Include="Icons\Text.png" />
+    <Resource Include="Icons\Warning.png" />
+    <Resource Include="Icons\Warning2.png" />
+  </ItemGroup>
+
 </Project>

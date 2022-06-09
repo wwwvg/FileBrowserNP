@@ -1,8 +1,7 @@
 ﻿<Application x:Class="FileBrowserNP.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:FileBrowserNP"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:FileBrowserNP">
     <Application.Resources>
          
     </Application.Resources>
