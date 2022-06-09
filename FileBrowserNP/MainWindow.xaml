@@ -1,0 +1,32 @@
+﻿<Window x:Class="FileBrowserNP.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FileBrowserNP"
+        mc:Ignorable="d"
+        Title="{Binding Title}" Icon="/Icons/Browser.png" Height="800" Width="1200" WindowStartupLocation="CenterScreen">
+
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top"/>
+        <StatusBar DockPanel.Dock="Bottom"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="450"></ColumnDefinition>
+                <ColumnDefinition Width="3"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ContentControl Grid.Row="0"/>
+                <ContentControl Grid.Row="1"/>
+            </Grid>
+            <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+            <ContentControl Grid.Column="2"/>
+
+        </Grid>
+    </DockPanel>
+</Window>
