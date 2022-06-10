@@ -1,7 +1,7 @@
 ﻿<Application x:Class="FileBrowserNP.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:FileBrowserNP.Models">
+             xmlns:local="clr-namespace:FileBrowserNP.Models" xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
 
     <Application.Resources>
 
@@ -61,7 +61,8 @@
 
         <DataTemplate x:Key="DriveTemplate">
             <Grid>
-                <TextBlock Text="{Binding Name}"></TextBlock>
+                <TextBlock Text="{Binding Name}" >
+                </TextBlock>
             </Grid>
         </DataTemplate>
 

@@ -16,10 +16,22 @@ namespace FileBrowserNP.ViewModels
     {
         public MainWindowViewModel()
         {
-            ICommand LoadHexView = new DelegateCommand(o => OnLoadHexView());
-            ICommand LoadTextView = new DelegateCommand(o => OnLoadTextView());
-            ICommand LoadImageView = new DelegateCommand(o => OnLoadImageView());
+            LoadHexView = new DelegateCommand(o => OnLoadHexView());
+            LoadTextView = new DelegateCommand(o => OnLoadTextView());
+            LoadImageView = new DelegateCommand(o => OnLoadImageView());
+            SelectedCommand = new DelegateCommand(o => OnSelectedCommand());
+            DoubleClickedCommand = new DelegateCommand(o => OnDoubleClickedCommand());
             SetDrives();
+        }
+
+        private void OnDoubleClickedCommand()
+        {
+            
+        }
+
+        private void OnSelectedCommand()
+        {
+
         }
 
         private ObservableCollection<Base> _files = new(); // список дисков, файлов и каталогов
@@ -27,6 +39,13 @@ namespace FileBrowserNP.ViewModels
         {
             get => _files;
             set => SetProperty(ref _files, value);
+        }
+
+        private Base _selectedFile = new();
+        public Base SelectedFile
+        {
+            get { return _selectedFile; }
+            set { SetProperty(ref _selectedFile, value); }
         }
 
         private void SetDrives()
@@ -80,6 +99,8 @@ namespace FileBrowserNP.ViewModels
         public ICommand LoadHexView { get; private set; }
         public ICommand LoadTextView { get; private set; }
         public ICommand LoadImageView { get; private set; }
+        public ICommand SelectedCommand { get; private set; }
+        public ICommand DoubleClickedCommand { get; private set; }
 
 
         private BindableBase _currentViewModel;

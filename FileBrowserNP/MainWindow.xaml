@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FileBrowserNP.Selectors"
+        xmlns:local="clr-namespace:FileBrowserNP.Selectors" 
+        xmlns:util="clr-namespace:FileBrowserNP.Helpers" 
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="{Binding Title}" Icon="./Icons/Browser.png" Height="800" Width="1200" WindowStartupLocation="CenterScreen">
 
@@ -16,8 +18,9 @@
                 DriveHeaderTemplate="{StaticResource DriveHeaderTemplate}"
                 FileHeaderTemplate="{StaticResource FileHeaderTemplate}">
         </local:HeaderTemplateSelector>
+        
     </Window.Resources>
-    
+
     <DockPanel>
         <ToolBar DockPanel.Dock="Top"/>
         <StatusBar DockPanel.Dock="Bottom"/>
@@ -28,13 +31,31 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             
-            <ListView Grid.Column="0" ItemsSource="{Binding Files}" Margin="5" HorizontalContentAlignment="Stretch" >
+            <Grid.InputBindings>
+                <KeyBinding Gesture="Enter" Command="{Binding DoubleClickedCommand}"/>
+            </Grid.InputBindings>
+
+            <ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Files}" Margin="5" HorizontalContentAlignment="Stretch" 
+                      IsSynchronizedWithCurrentItem="True">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="Auto" CellTemplateSelector="{StaticResource fileTemplateSelector}" 
-                                                    HeaderTemplateSelector="{StaticResource headerTemplateSelector}"/>
+                                                    HeaderTemplateSelector="{StaticResource headerTemplateSelector}">
+                            <GridViewColumnHeader PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"></GridViewColumnHeader>
+                        </GridViewColumn>
                     </GridView>
                 </ListView.View>
+
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding SelectedCommand}"
+                                                CommandParameter="{Binding SelectedFile, Mode=TwoWay}"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding DoubleClickedCommand}"
+                                                CommandParameter="{Binding SelectedFile, Mode=TwoWay}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
             </ListView>
 
             <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
