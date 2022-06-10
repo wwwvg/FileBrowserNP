@@ -48,19 +48,28 @@
 
 
         <DataTemplate x:Key="DriveHeaderTemplate">
-            <ListView.View>
-                <GridView>
-
-
-                    <GridViewColumn Width="Auto" Header="State Name" DisplayMemberBinding="{Binding Path=Name}"/>
-                    <GridViewColumn Width="Auto" Header="State Capital" DisplayMemberBinding="{Binding Path=Label}"/>
-                    <GridViewColumn Width="Auto" Header="State Nick Name" DisplayMemberBinding="{Binding Path=FreeSpace}"/>
-                </GridView>
-
-            </ListView.View>
+            <Grid>
+                <TextBlock Text="Диск"></TextBlock>
+            </Grid>
         </DataTemplate>
 
-        
+        <DataTemplate x:Key="FileHeaderTemplate">
+            <Grid>
+                <TextBlock Text="Имя2"></TextBlock>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DriveTemplate">
+            <Grid>
+                <TextBlock Text="{Binding Name}"></TextBlock>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FileTemplate">
+            <Grid>
+                <TextBlock Text="{Binding Name}"></TextBlock>
+            </Grid>
+        </DataTemplate>
 
     </Application.Resources>
     

@@ -7,6 +7,17 @@
         mc:Ignorable="d"
         Title="{Binding Title}" Icon="./Icons/Browser.png" Height="800" Width="1200" WindowStartupLocation="CenterScreen">
 
+    <Window.Resources>
+        <local:FileTemplateSelector x:Key="fileTemplateSelector"
+                DriveTemplate="{StaticResource DriveTemplate}"
+                FileTemplate="{StaticResource FileTemplate}">
+        </local:FileTemplateSelector>
+        <local:HeaderTemplateSelector x:Key="headerTemplateSelector"
+                DriveHeaderTemplate="{StaticResource DriveHeaderTemplate}"
+                FileHeaderTemplate="{StaticResource FileHeaderTemplate}">
+        </local:HeaderTemplateSelector>
+    </Window.Resources>
+    
     <DockPanel>
         <ToolBar DockPanel.Dock="Top"/>
         <StatusBar DockPanel.Dock="Bottom"/>
@@ -16,17 +27,14 @@
                 <ColumnDefinition Width="3"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-
-            <ListView Grid.Column="0" Margin="5" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Files}">
-                
-                <!--<ListView.ItemTemplateSelector>
-                    <local:FileTemplateSelector
-                            DriveTemplate="{StaticResource DriveTemplate}"
-                               
-                    >
-                    </local:FileTemplateSelector>
-                </ListView.ItemTemplateSelector>-->
-
+            
+            <ListView Grid.Column="0" ItemsSource="{Binding Files}" Margin="5" HorizontalContentAlignment="Stretch" >
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Width="Auto" CellTemplateSelector="{StaticResource fileTemplateSelector}" 
+                                                    HeaderTemplateSelector="{StaticResource headerTemplateSelector}"/>
+                    </GridView>
+                </ListView.View>
             </ListView>
 
             <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
