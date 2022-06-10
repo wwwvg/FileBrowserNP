@@ -6,46 +6,7 @@
         xmlns:local="clr-namespace:FileBrowserNP.Selectors"
         mc:Ignorable="d"
         Title="{Binding Title}" Icon="./Icons/Browser.png" Height="800" Width="1200" WindowStartupLocation="CenterScreen">
-    <Window.Resources>
-        <DataTemplate x:Key="DriveTemplate">
-            <Grid Margin="3">
-                <!--<Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>-->
 
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="./Icons/HardDrive.png" MaxHeight="15"></Image>
-                    <TextBlock Text="{Binding Name}" Margin="5,0,0,0"></TextBlock>
-                </StackPanel>
-                <!--<TextBlock Grid.Column="1" Text="{Binding Label}" Margin="5,0,0,0"></TextBlock>
-                <TextBlock Grid.Column="2" Text="{Binding FreeSpace}" Margin="5,0,0,0"></TextBlock>
-                <TextBlock Grid.Column="3" Text="{Binding TotalSpace}" Margin="5,0,0,0"></TextBlock>-->
-            </Grid>
-        </DataTemplate>
-        <ControlTemplate x:Key="DriveHeaderTemplate">
-            <Grid Margin="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Диск" Margin="5,0,0,0"></TextBlock>
-                <TextBlock Grid.Column="0" Text="Память" Margin="5,0,0,0"></TextBlock>
-            </Grid>
-        </ControlTemplate>
-
-        <DataTemplate x:Key="FolderTemplate">
-            <Border Margin="5" BorderThickness="1" BorderBrush="SteelBlue" Background="LightYellow" CornerRadius="4">
-                <Grid Margin="3">
-                    <TextBlock Text="{Binding Path=Name}"></TextBlock>
-                </Grid>
-            </Border>
-        </DataTemplate>
-        <local:HeaderTemplateSelector x:Key="mHeaderTemplateSelector"
-                DriveHeaderTemplate="{StaticResource DriveHeaderTemplate}"/>
-    </Window.Resources>
     <DockPanel>
         <ToolBar DockPanel.Dock="Top"/>
         <StatusBar DockPanel.Dock="Bottom"/>
@@ -55,68 +16,19 @@
                 <ColumnDefinition Width="3"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
 
-                <ListView ItemsSource="{Binding Files}" HorizontalContentAlignment="Stretch">
-
-                    <!--<ListView.ItemTemplateSelector>
-                        <local:FileTemplateSelector
+            <ListView Grid.Column="0" Margin="5" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Files}">
+                
+                <!--<ListView.ItemTemplateSelector>
+                    <local:FileTemplateSelector
                             DriveTemplate="{StaticResource DriveTemplate}"
-                            FolderTemplate="{StaticResource FolderTemplate}">
-                    --><!--HexFileTemplate="{StaticResource HexFileTemplate}"
-                            TextFileTemplate="{StaticResource TextFileTemplate}"
-                            ImageFileTemplate="{StaticResource ImageFileTemplate}"
-                            BackTemplate="{StaticResource BackTemplate}">--><!--
-
+                               
+                    >
                     </local:FileTemplateSelector>
-                    </ListView.ItemTemplateSelector>-->
+                </ListView.ItemTemplateSelector>-->
 
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn
-                                HeaderTemplateSelector="{StaticResource mHeaderTemplateSelector}"
-                                CellTemplateSelector="{DynamicResource local:FileTemplateSelector}">
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
+            </ListView>
 
-
-
-
-
-                    <!--<ListView.Template>
-                        <ControlTemplate>
-                            <Grid Margin="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="Диск" Margin="5,0,0,0"></TextBlock>
-                                <TextBlock Grid.Column="1" Text="Метка" Margin="5,0,0,0"></TextBlock>
-                                <TextBlock Grid.Column="2" Text="Свободная память" Margin="5,0,0,0"></TextBlock>
-                                <TextBlock Grid.Column="3" Text="Всего памяти" Margin="5,0,0,0"></TextBlock>
-                            </Grid>
-                        </ControlTemplate>
-                    </ListView.Template>-->
-                </ListView>
-
-                <!--PropertyToEvaluate="Name"-->
-
-                <!--<i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
-                            <prism:InvokeCommandAction Command="{Binding SelectedCommandListView}"
-                                                CommandParameter="{Binding SelectedFile, Mode=TwoWay}" />
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="MouseDoubleClick">
-                            <prism:InvokeCommandAction Command="{Binding DoubleClicked}"
-                                                CommandParameter="{Binding SelectedFile, Mode=TwoWay}"
-                                               />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>-->
-
-            </Grid>
             <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             <ContentControl Grid.Column="2"/>
 
