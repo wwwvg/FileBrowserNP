@@ -24,5 +24,9 @@ namespace FileBrowserNP.Views
         {
             InitializeComponent();
         }
+        private void ListView_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

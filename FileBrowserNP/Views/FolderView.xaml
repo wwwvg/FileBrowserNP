@@ -10,18 +10,21 @@
     
     <!--ПАПКИ-->
     <UserControl.Resources>
-        <local:FileTemplateSelector x:Key="fileTemplateSelector"
-                DriveTemplate="{StaticResource DriveTemplate}"
-                FolderTemplate="{StaticResource FolderTemplate}">
+        <local:FileTemplateSelector x:Key="FileTemplateSelector"
+                BackTemplate="{StaticResource BackTemplate}"
+                FolderTemplate="{StaticResource FolderTemplate}"
+                ImageTemplate="{StaticResource ImageTemplate}"                    
+                HexTemplate="{StaticResource HexTemplate}"
+                TextTemplate="{StaticResource TextTemplate}" >
         </local:FileTemplateSelector>
     </UserControl.Resources>
     <Grid>
         <!--СПИСОК ПАПОК-->
-        <ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Files}" Margin="5" HorizontalContentAlignment="Stretch" 
+        <ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Files}" HorizontalContentAlignment="Stretch" 
                             SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedFile}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="Auto" CellTemplateSelector="{StaticResource fileTemplateSelector}">
+                    <GridViewColumn Width="Auto" CellTemplateSelector="{StaticResource FileTemplateSelector}">
                         <GridViewColumnHeader Content="Имя" PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"></GridViewColumnHeader>
                     </GridViewColumn>
                 </GridView>

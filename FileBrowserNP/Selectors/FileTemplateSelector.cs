@@ -9,9 +9,9 @@ namespace FileBrowserNP.Selectors
     {
         public DataTemplate DriveTemplate { get; set; }
         public DataTemplate FolderTemplate { get; set; }
-        public DataTemplate HexFileTemplate { get; set; }
-        public DataTemplate TextFileTemplate { get; set; }
-        public DataTemplate ImageFileTemplate { get; set; }
+        public DataTemplate HexTemplate { get; set; }
+        public DataTemplate TextTemplate { get; set; }
+        public DataTemplate ImageTemplate { get; set; }
         public DataTemplate BackTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item,
@@ -27,25 +27,16 @@ namespace FileBrowserNP.Selectors
                 return FolderTemplate;
 
             if (type == typeof(HexFile))
-                return HexFileTemplate;
+                return HexTemplate;
 
             if (type == typeof(TextFile))
-                return TextFileTemplate;
+                return TextTemplate;
 
             if (type == typeof(ImageFile))
-                return ImageFileTemplate;
+                return ImageTemplate;
 
             return BackTemplate;
 
         }
-
-        //public string PropertyToEvaluate
-        //{
-        //    get; set;
-        //}
-        //public string PropertyValueToHighlight
-        //{
-        //    get; set;
-        //}
     }
 }

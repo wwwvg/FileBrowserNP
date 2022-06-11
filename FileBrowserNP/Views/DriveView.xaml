@@ -10,7 +10,7 @@
 
     <!--ДИСКИ-->
     <UserControl.Resources>
-        <local:FileTemplateSelector x:Key="fileTemplateSelector"
+        <local:FileTemplateSelector x:Key="FileTemplateSelector"
                 DriveTemplate="{StaticResource DriveTemplate}"
                 FolderTemplate="{StaticResource FolderTemplate}">
         </local:FileTemplateSelector>
@@ -21,7 +21,7 @@
                             SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedDrive}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="Auto" CellTemplateSelector="{StaticResource fileTemplateSelector}">
+                    <GridViewColumn Width="Auto" CellTemplateSelector="{StaticResource FileTemplateSelector}">
                         <GridViewColumnHeader Content="Диск" PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"></GridViewColumnHeader>
                     </GridViewColumn>
                 </GridView>

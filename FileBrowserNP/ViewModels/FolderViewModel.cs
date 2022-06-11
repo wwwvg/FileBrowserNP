@@ -14,15 +14,23 @@ namespace FileBrowserNP.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public FolderViewModel()
+        public FolderViewModel(string path)
         {
-            SetDrives();
+            SetFoldersAndFiles(path);
         }
 
         #region СВОЙСТВА
-        public ObservableCollection<Folder> Folders { get; set; } = new();
-        public Drive SelectedFolder { get; set; }
+        private ObservableCollection<Base> _files = new();  
+        public ObservableCollection<Base> Files
+        {
+            get { return _files; }
+            set { SetProperty(ref _files, value); }
+        }
+
+        public Folder SelectedFile { get; set; }
         public int SelectedIndex { get; set; }
+
+        private bool _isError = false; // для своевременного удаления сообщения об ошибке
         #endregion
 
         #region КОМАНДЫ
@@ -37,9 +45,9 @@ namespace FileBrowserNP.ViewModels
         #endregion
 
         #region СОБЫТИЯ
-        public event EventHandler<SelectedItemEventArgs> DriveDoubleClicked;     // событие двойного клика
+        public event EventHandler<SelectedItemEventArgs> FileDoubleClicked;     // событие двойного клика
 
-        public event EventHandler<SelectedItemEventArgs> ItemSelected;             // событие выбранного элемента
+        public event EventHandler<SelectedItemEventArgs> FileSelected;             // событие выбранного элемента
 
         public event EventHandler<MessageEventArgs> Error;
 
@@ -48,38 +56,57 @@ namespace FileBrowserNP.ViewModels
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вьюмодели передается путь к файлу и выбранный индекс
         {
-            ItemSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFolder, SelectedIndex));
+            FileSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex));
         }
         private void OnDoubleClickedCommand()  // двойной щелчок. главной вьюмодели передается путь к файлу и выбранный индекс
         {
-            DriveDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedDrive, SelectedIndex));
+            FileDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex));
         }
-        private void SetDrives()
+
+
+        private void SetFoldersAndFiles(string path) // добавление папок и файлов
         {
+            Files.Clear();
+            DirectoryInfo dir = new DirectoryInfo($"{path}");
             try
             {
-                DriveInfo[] drives = DriveInfo.GetDrives(); //получаем список дисков
-                if (drives.Length == 0)
-                    return;
+                DirectoryInfo[] directories = dir.GetDirectories();
 
-                Drives.Clear();
+                Files.Add(new Back());
 
-                foreach (var drive in drives) //добавляем их в список
+                foreach (var item in directories)
                 {
-
-                    Drives.Add(new Drive()
-                    {
-                        Name = drive.Name,
-                        Label = drive.VolumeLabel,
-                        FreeSpace = Bytes.SizeSuffix(drive.TotalFreeSpace),
-                        TotalSpace = Bytes.SizeSuffix(drive.TotalSize)
-                    });
+                    _isError = false;
+                    if (item.Attributes == FileAttributes.Hidden || item.Attributes == FileAttributes.System)
+                        continue;
+                    Files.Add(new Folder { Path = item.FullName, Name = $"[{item.Name}]", Size = "<Папка>", TimeCreated = item.LastWriteTime.ToString("dd/MM/yyyy  hh:mm") });
                 }
 
+                FileInfo[] files = dir.GetFiles();
+                foreach (var item in files)
+                {
+                    _isError = false;
+
+                    string name = item.Name; 
+                    string fullPath = item.FullName; 
+                    string size = Bytes.SizeSuffix(item.Length); 
+                    string time = item.LastWriteTime.ToString("dd/MM/yyyy  hh:mm");
+
+                    if (item.Extension == ".png" || item.Extension == ".bmp" || item.Extension == ".jpg" || item.Extension == ".gif")
+                        Files.Add(new ImageFile { Name = name, Path = fullPath, Size = size, TimeCreated = time });
+                   
+                    else if (item.Extension == ".txt" || item.Extension == ".cfg" || item.Extension == ".ini" || item.Extension == ".log" || item.Extension == ".csv" || item.Extension == ".xml")
+                        Files.Add(new TextFile { Name = name, Path = fullPath, Size = size, TimeCreated = time });
+                   
+                    else
+                        Files.Add(new HexFile { Name = name, Path = fullPath, Size = size, TimeCreated = time });
+                }
             }
-            catch (Exception ex) // не все диски м.б. доступны (например - сетевой)
+
+            catch (Exception ex) // некоторые системные папки и файлы недоступны, но если запустить программу с админскими привилегиями то все ОК.
             {
-                Error?.Invoke(this, new MessageEventArgs(ex.Message, SelectedIndex));
+                _isError = true;
+
             }
         }
         #endregion

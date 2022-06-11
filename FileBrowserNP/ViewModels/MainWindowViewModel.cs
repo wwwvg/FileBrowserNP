@@ -20,7 +20,7 @@ namespace FileBrowserNP.ViewModels
         {
             LoadDriveView();    // при запуске программы отображаем список дисков                                        
             ((DriveViewModel)CurrentViewModel).DriveDoubleClicked += OnDriveDoubleClicked;   // подключен обработчик двойного клика по диску
-            ((DriveViewModel)CurrentViewModel).ItemSelected += OnDriveSelected;    // подключен обработчик выбоа диска
+            ((DriveViewModel)CurrentViewModel).ItemSelected += OnDriveSelected;    // подключен обработчик выбора диска
             ((DriveViewModel)CurrentViewModel).Error += OnError;
         }
 
@@ -62,7 +62,7 @@ namespace FileBrowserNP.ViewModels
         }
         #endregion
 
-        #region ОБРАБОТЧИКИ И МЕТОДЫ
+        #region ОБРАБОТЧИКИ И МЕТОДЫ ДИСКОВ
         private void LoadDriveView()   // текущая вью-модель переключается на диски
         {
             CurrentViewModel = new DriveViewModel();      
@@ -71,10 +71,6 @@ namespace FileBrowserNP.ViewModels
         {
             ImageStatusBar = new BitmapImage(new Uri("..\\Icons\\Warning.png", UriKind.Relative));
             MessageStatusBar = e.Message;
-        }
-        public void OnDriveDoubleClicked(object sender, SelectedItemEventArgs e)  // по диску щелкнули два раза
-        {
-
         }
 
         private void OnDriveSelected(object sender, SelectedItemEventArgs e)   // выбрали диск
@@ -86,21 +82,35 @@ namespace FileBrowserNP.ViewModels
                 MessageStatusBar = $"[{drive.Label}]  свободно {drive.FreeSpace} из {drive.TotalSpace}";
             }
         }
-
-        private void OnLoadImageView()
+        public void OnDriveDoubleClicked(object sender, SelectedItemEventArgs e)  // по диску щелкнули два раза
         {
-
-        }
-
-        private void OnLoadHexView()
-        {
-
-        }
-
-        private void OnLoadTextView()
-        {
-
+            if (e.SelectedItem != null && e.SelectedItem is Drive drive)
+            {
+                CurrentViewModel = new FolderViewModel(drive.Name);   // текущая вью-модель переключается на папки
+                ((FolderViewModel)CurrentViewModel).FileDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
+                ((FolderViewModel)CurrentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора диска
+                ((FolderViewModel)CurrentViewModel).Error += OnError;
+            }
         }
         #endregion
+
+        #region ОБРАБОТЧИКИ И МЕТОДЫ ПАПОК/ФАЙЛОВ
+        public void OnFileDoubleClicked(object sender, SelectedItemEventArgs e)  // по папке/файлу щелкнули два раза
+        {
+            if (e.SelectedItem != null && e.SelectedItem is Drive drive)
+            {
+
+            }
+        }
+        public void OnFileSelected(object sender, SelectedItemEventArgs e)  // выбрали папку/файл
+        {
+            if (e.SelectedItem != null && e.SelectedItem is Drive drive)
+            {
+
+            }
+        }
+
+        #endregion
+
     }
 }

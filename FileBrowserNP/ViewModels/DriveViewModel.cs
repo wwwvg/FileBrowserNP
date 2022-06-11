@@ -22,7 +22,7 @@ namespace FileBrowserNP.ViewModels
         }
 
         #region СВОЙСТВА
-        public ObservableCollection<Drive> Drives { get; set; } = new();
+        public ObservableCollection<Base> Drives { get; set; } = new();
         public Drive SelectedDrive { get; set; }
         public int SelectedIndex { get; set; }
         #endregion

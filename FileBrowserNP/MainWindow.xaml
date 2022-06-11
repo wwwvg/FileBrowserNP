@@ -13,7 +13,10 @@
             <DataTemplate DataType="{x:Type vm:DriveViewModel}">
                 <view:DriveView />
             </DataTemplate>
-        </Window.Resources>
+            <DataTemplate DataType="{x:Type vm:FolderViewModel}">
+                <view:FolderView />
+            </DataTemplate>
+    </Window.Resources>
 
     <DockPanel>
         <ToolBar DockPanel.Dock="Top"/>
