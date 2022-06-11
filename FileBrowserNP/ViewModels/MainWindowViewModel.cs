@@ -21,7 +21,12 @@ namespace FileBrowserNP.ViewModels
             LoadImageView = new DelegateCommand(o => OnLoadImageView());
             SelectedCommand = new DelegateCommand(o => OnSelectedCommand());
             DoubleClickedCommand = new DelegateCommand(o => OnDoubleClickedCommand());
-            SetDrives();
+            LoadDriveView();
+        }
+
+        private void LoadDriveView()
+        {
+            CurrentViewModel = new DriveViewModel(_files);
         }
 
         private void OnDoubleClickedCommand()

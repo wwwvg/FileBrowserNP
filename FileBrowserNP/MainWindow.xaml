@@ -3,13 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FileBrowserNP.Selectors" 
+        xmlns:local="clr-namespace:FileBrowserNP.Selectors"
+        xmlns:view="clr-namespace:FileBrowserNP.Views"
+        xmlns:vm="clr-namespace:FileBrowserNP.ViewModels"
         xmlns:util="clr-namespace:FileBrowserNP.Helpers" 
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:viewmodels="clr-namespace:FileBrowserNP.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="{Binding Title}" Icon="./Icons/Browser.png" Height="800" Width="1200" WindowStartupLocation="CenterScreen">
 
-    <Window.Resources>
+    <!--<Window.Resources>
         <local:FileTemplateSelector x:Key="fileTemplateSelector"
                 DriveTemplate="{StaticResource DriveTemplate}"
                 FileTemplate="{StaticResource FileTemplate}">
@@ -19,7 +22,13 @@
                 FileHeaderTemplate="{StaticResource FileHeaderTemplate}">
         </local:HeaderTemplateSelector>
         
-    </Window.Resources>
+    </Window.Resources>-->
+
+        <Window.Resources>
+            <DataTemplate DataType="{x:Type vm:DriveViewModel}">
+                <view:DriveView />
+            </DataTemplate>
+        </Window.Resources>
 
     <DockPanel>
         <ToolBar DockPanel.Dock="Top"/>
@@ -30,8 +39,10 @@
                 <ColumnDefinition Width="3"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            
-            <Grid.InputBindings>
+
+            <ContentControl Content="{Binding Path=CurrentViewModel}"></ContentControl>
+
+            <!--<Grid.InputBindings>
                 <KeyBinding Gesture="Enter" Command="{Binding DoubleClickedCommand}"/>
             </Grid.InputBindings>
 
@@ -56,7 +67,7 @@
                                                 CommandParameter="{Binding SelectedFile, Mode=TwoWay}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-            </ListView>
+            </ListView>-->
 
             <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             <ContentControl Grid.Column="2"/>
