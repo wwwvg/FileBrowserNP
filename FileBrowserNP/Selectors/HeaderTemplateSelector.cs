@@ -15,9 +15,9 @@ namespace FileBrowserNP.Selectors
             if (item == null)
                 return DriveHeaderTemplate;
 
-            Base product = (Base)item;
+            Base myType = (Base)item;
   
-            Type type = product.GetType();
+            Type type = myType.GetType();
             if (type == typeof(Drive))
                 return DriveHeaderTemplate;
 

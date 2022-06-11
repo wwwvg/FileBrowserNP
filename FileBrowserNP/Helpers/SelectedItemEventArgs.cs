@@ -9,12 +9,13 @@ namespace FileBrowserNP.Helpers
 {
     public class SelectedItemEventArgs : EventArgs
     {
-        public readonly Base SelectedItem;
-        public readonly int SelectedIndex;
         public SelectedItemEventArgs(Base selectedItem, int selectedIndex)
         {
             SelectedItem = selectedItem;
             SelectedIndex = selectedIndex;
         }
+
+        public readonly Base SelectedItem;
+        public readonly int SelectedIndex;
     }
 }

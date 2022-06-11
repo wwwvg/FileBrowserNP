@@ -14,9 +14,9 @@ namespace FileBrowserNP.Selectors
         {
 
             Window window = Application.Current.MainWindow;
-            Base product = (Base)item;
+            Base myType = (Base)item;
 
-            Type type = product.GetType();
+            Type type = myType.GetType();
             if (type == typeof(Drive))
                 return DriveStyle;
 

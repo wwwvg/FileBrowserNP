@@ -46,9 +46,9 @@ namespace FileBrowserNP.ViewModels
         public event EventHandler<MessageEventArgs> Error;
 
         #endregion
-
+                                                                                        #warning зачем передаешь индекс?
         #region ОБРАБОТЧИКИ И МЕТОДЫ
-        private void OnItemSelected()  // выбрали элемент. главной вьюмодели передается путь к файлу и выбранный индекс
+        private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
             ItemSelected?.Invoke(this, new SelectedItemEventArgs(SelectedDrive, SelectedIndex));
         }

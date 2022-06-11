@@ -14,12 +14,11 @@ namespace FileBrowserNP.Selectors
         public DataTemplate ImageTemplate { get; set; }
         public DataTemplate BackTemplate { get; set; }
 
-        public override DataTemplate SelectTemplate(object item,
-        DependencyObject container)
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             Base myType = (Base)item;
-
             Type type = myType.GetType();
+
             if (type == typeof(Drive))
                 return DriveTemplate;
 

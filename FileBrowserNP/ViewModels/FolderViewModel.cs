@@ -35,12 +35,10 @@ namespace FileBrowserNP.ViewModels
 
         #region КОМАНДЫ
         private DelegateCommand _doubleClickedCommand;
-        public DelegateCommand DoubleClickedCommand =>
-            _doubleClickedCommand ?? (_doubleClickedCommand = new DelegateCommand(o => OnDoubleClickedCommand()));
+        public DelegateCommand DoubleClickedCommand =>  _doubleClickedCommand ?? (_doubleClickedCommand = new DelegateCommand(o => OnDoubleClickedCommand()));
 
         private DelegateCommand _selectedCommand;
-        public DelegateCommand SelectedCommand =>
-            _selectedCommand ?? (_selectedCommand = new DelegateCommand(o => OnItemSelected()));
+        public DelegateCommand SelectedCommand =>  _selectedCommand ?? (_selectedCommand = new DelegateCommand(o => OnItemSelected()));
 
         #endregion
 
@@ -54,9 +52,9 @@ namespace FileBrowserNP.ViewModels
   //      public event EventHandler<MessageEventArgs> BackClicked;        // событие перехода на верхний уровень
 
         #endregion
-
+                                                                                                #warning зачем передаешь индекс?
         #region ОБРАБОТЧИКИ И МЕТОДЫ
-        private void OnItemSelected()  // выбрали элемент. главной вьюмодели передается путь к файлу и выбранный индекс
+        private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
             FileSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex));
         }
@@ -109,7 +107,7 @@ namespace FileBrowserNP.ViewModels
             catch (Exception ex) // некоторые системные папки и файлы недоступны, но если запустить программу с админскими привилегиями то все ОК.
             {
                 _isError = true;
-
+                                        #warning отправить сообщение    
             }
         }
         #endregion

@@ -13,8 +13,7 @@ namespace MainModule.Helpers
     {
         public static string SizeSuffix(Int64 value, int decimalPlaces = 1)
         {
-            string[] SizeSuffixes =
-                          { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+            string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
             if (value < 0) { return "-" + SizeSuffix(-value, decimalPlaces); }
 
             int i = 0;
