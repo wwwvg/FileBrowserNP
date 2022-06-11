@@ -8,7 +8,7 @@ namespace FileBrowserNP.Selectors
     public class FileTemplateSelector : DataTemplateSelector
     {
         public DataTemplate DriveTemplate { get; set; }
-        public DataTemplate FileTemplate { get; set; }
+        public DataTemplate FolderTemplate { get; set; }
         public DataTemplate HexFileTemplate { get; set; }
         public DataTemplate TextFileTemplate { get; set; }
         public DataTemplate ImageFileTemplate { get; set; }
@@ -24,7 +24,7 @@ namespace FileBrowserNP.Selectors
                 return DriveTemplate;
 
             if (type == typeof(Folder))
-                return FileTemplate;
+                return FolderTemplate;
 
             if (type == typeof(HexFile))
                 return HexFileTemplate;

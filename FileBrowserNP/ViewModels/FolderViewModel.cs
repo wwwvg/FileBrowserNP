@@ -9,21 +9,19 @@ using MainModule.Helpers;
 
 namespace FileBrowserNP.ViewModels
 {
-    public class DriveViewModel: BindableBase
+    public class FolderViewModel : BindableBase
     {
         /// <summary>
-        /// При запуске программы включается данная вью-модель отображающая диски. При выборе диска или ошибке в главную вью-модель
-        /// передается соответствующее сообщение устанавлиываемое главной вью-моделью в статус бар. При двойном щелчке управление 
-        /// передается обратно в главную вью-модель, которая далее отображает список каталогов и файлов.
+        /// 
         /// </summary>
-        public DriveViewModel()
+        public FolderViewModel()
         {
             SetDrives();
         }
 
         #region СВОЙСТВА
-        public ObservableCollection<Drive> Drives { get; set; } = new();
-        public Drive SelectedDrive { get; set; }
+        public ObservableCollection<Folder> Folders { get; set; } = new();
+        public Drive SelectedFolder { get; set; }
         public int SelectedIndex { get; set; }
         #endregion
 
@@ -50,7 +48,7 @@ namespace FileBrowserNP.ViewModels
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вьюмодели передается путь к файлу и выбранный индекс
         {
-            ItemSelected?.Invoke(this, new SelectedItemEventArgs(SelectedDrive, SelectedIndex));
+            ItemSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFolder, SelectedIndex));
         }
         private void OnDoubleClickedCommand()  // двойной щелчок. главной вьюмодели передается путь к файлу и выбранный индекс
         {
