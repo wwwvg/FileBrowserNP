@@ -21,21 +21,21 @@
     <DockPanel>
         <ToolBar DockPanel.Dock="Top"/>
         <StatusBar DockPanel.Dock="Bottom">
-            <Image Grid.Column="0" Source="{Binding ImageStatusBar}" Height="20" VerticalAlignment="Center"></Image>
-            <Label Grid.Column="1" Content="{Binding MessageStatusBar}" Margin="5 0 0 0" VerticalAlignment="Center"></Label>
+            <Image Grid.Column="0" Source="{Binding ImageStatusBar}" Height="20" VerticalAlignment="Center"/>
+            <Label Grid.Column="1" Content="{Binding MessageStatusBar}" Margin="5 0 0 0" VerticalAlignment="Center"/>
         </StatusBar>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="450"></ColumnDefinition>
-                <ColumnDefinition Width="3"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="450"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!--В зависимости от типа отображается DriveView или FolderView-->
-            <ContentControl Content="{Binding Path=CurrentViewModel}"></ContentControl>
-
-            <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
-            <ContentControl Grid.Column="2"/>
+            <!--В зависимости от типа в левой панели отображается DriveView или FolderView-->
+            <ContentControl Grid.Column="0" Content="{Binding Path=CurrentViewModel}"/>
+            <GridSplitter   Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+            <!--В зависимости от типа в правой панели отображается FolderView / ImageView / HexView / TextView-->
+            <ContentControl Grid.Column="2" Content="{Binding Path=ContentViewModel}"/>
 
         </Grid>
     </DockPanel>

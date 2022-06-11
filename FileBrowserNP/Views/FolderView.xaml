@@ -24,8 +24,14 @@
                             SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedFile}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="Auto" CellTemplateSelector="{StaticResource FileTemplateSelector}">
-                        <GridViewColumnHeader Content="Имя" PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"></GridViewColumnHeader>
+                    <GridViewColumn Width="200" CellTemplateSelector="{StaticResource FileTemplateSelector}">
+                        <GridViewColumnHeader Content="Имя" PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"/>
+                    </GridViewColumn>
+                    <GridViewColumn Width="110" CellTemplate="{StaticResource SizeTemplate}">
+                        <GridViewColumnHeader Content="Размер" PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"/>
+                    </GridViewColumn>
+                    <GridViewColumn Width="Auto" CellTemplate="{StaticResource DateTemplate}">
+                        <GridViewColumnHeader Content="Изменен" PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"/>
                     </GridViewColumn>
                 </GridView>
             </ListView.View>

@@ -77,7 +77,7 @@ namespace FileBrowserNP.ViewModels
                         TotalSpace = Bytes.SizeSuffix(drive.TotalSize)
                     });
                 }
-
+                SelectedIndex = 0;
             }
             catch (Exception ex) // не все диски м.б. доступны (например - сетевой)
             {

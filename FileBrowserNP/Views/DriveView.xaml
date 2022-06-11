@@ -9,19 +9,13 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <!--ДИСКИ-->
-    <UserControl.Resources>
-        <local:FileTemplateSelector x:Key="FileTemplateSelector"
-                DriveTemplate="{StaticResource DriveTemplate}"
-                FolderTemplate="{StaticResource FolderTemplate}">
-        </local:FileTemplateSelector>
-    </UserControl.Resources>
     <Grid>
         <!--СПИСОК ДИСКОВ-->
-        <ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Drives}" Margin="5" HorizontalContentAlignment="Stretch" 
+        <ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Drives}" HorizontalContentAlignment="Stretch" 
                             SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedDrive}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="Auto" CellTemplateSelector="{StaticResource FileTemplateSelector}">
+                    <GridViewColumn Width="100" CellTemplate="{StaticResource DriveTemplate}">
                         <GridViewColumnHeader Content="Диск" PreviewMouseDoubleClick="ListView_PreviewMouseDoubleClick"></GridViewColumnHeader>
                     </GridViewColumn>
                 </GridView>

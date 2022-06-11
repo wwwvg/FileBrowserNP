@@ -27,7 +27,7 @@ namespace FileBrowserNP.ViewModels
             set { SetProperty(ref _files, value); }
         }
 
-        public Folder SelectedFile { get; set; }
+        public Base SelectedFile { get; set; }
         public int SelectedIndex { get; set; }
 
         private bool _isError = false; // для своевременного удаления сообщения об ошибке
@@ -50,6 +50,8 @@ namespace FileBrowserNP.ViewModels
         public event EventHandler<SelectedItemEventArgs> FileSelected;             // событие выбранного элемента
 
         public event EventHandler<MessageEventArgs> Error;
+
+  //      public event EventHandler<MessageEventArgs> BackClicked;        // событие перехода на верхний уровень
 
         #endregion
 
@@ -101,6 +103,7 @@ namespace FileBrowserNP.ViewModels
                     else
                         Files.Add(new HexFile { Name = name, Path = fullPath, Size = size, TimeCreated = time });
                 }
+                SelectedIndex = 0;
             }
 
             catch (Exception ex) // некоторые системные папки и файлы недоступны, но если запустить программу с админскими привилегиями то все ОК.

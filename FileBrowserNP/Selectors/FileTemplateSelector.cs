@@ -17,9 +17,9 @@ namespace FileBrowserNP.Selectors
         public override DataTemplate SelectTemplate(object item,
         DependencyObject container)
         {
-            Base product = (Base)item;
+            Base myType = (Base)item;
 
-            Type type = product.GetType();
+            Type type = myType.GetType();
             if (type == typeof(Drive))
                 return DriveTemplate;
 

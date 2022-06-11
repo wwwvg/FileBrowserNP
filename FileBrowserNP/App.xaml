@@ -27,50 +27,55 @@
             <Setter Property="Height" Value="17"/>
             <Setter Property="Margin" Value="3,0,0,0"/>
         </Style>
-        <!--<Style TargetType="ListViewItem">
-            <Setter Property="Height" Value="20"/>
-        </Style>-->
-        
+
         <DataTemplate x:Key="DriveTemplate">
             <StackPanel Orientation="Horizontal">
-                <Image Source = "./Icons/HardDrive.png"></Image>
-                <TextBlock Text="{Binding Name}"></TextBlock>
+                <Image Source = "./Icons/HardDrive.png" Height="20"/>
+                <TextBlock Text="{Binding Name}" Height="20"/>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="FolderTemplate">
             <StackPanel Orientation="Horizontal">
-                <Image Source = "./Icons/Folder.png"></Image>
-                <TextBlock Text="{Binding Name}"></TextBlock>
+                <Image Source = "./Icons/Folder.png"/>
+                <TextBlock Text="{Binding Name}"/>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="BackTemplate">
             <StackPanel Orientation="Horizontal">
-                <Image Source = "./Icons/Back.png"></Image>
-                <TextBlock Text="{Binding Name}"></TextBlock>
+                <Image Source = "./Icons/Back.png"/>
+                <TextBlock Text="{Binding Name}"/>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="ImageTemplate">
             <StackPanel Orientation="Horizontal">
-                <Image Source = "./Icons/Image.png"></Image>
-                <TextBlock Text="{Binding Name}"></TextBlock>
+                <Image Source = "./Icons/Image.png"/>
+                <TextBlock Text="{Binding Name}"/>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="HexTemplate">
             <StackPanel Orientation="Horizontal">
-                <Image Source = "./Icons/Bin.png"></Image>
-                <TextBlock Text="{Binding Name}"></TextBlock>
+                <Image Source = "./Icons/Bin.png"/>
+                <TextBlock Text="{Binding Name}"/>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="TextTemplate">
             <StackPanel Orientation="Horizontal">
-                <Image Source = "./Icons/Text.png"></Image>
-                <TextBlock Text="{Binding Name}"></TextBlock>
+                <Image Source = "./Icons/Text.png"/>
+                <TextBlock Text="{Binding Name}"/>
             </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SizeTemplate">
+            <TextBlock Text="{Binding Size}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DateTemplate">
+            <TextBlock Text="{Binding TimeCreated}"/>
         </DataTemplate>
 
     </Application.Resources>

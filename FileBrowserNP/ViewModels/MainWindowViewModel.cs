@@ -19,13 +19,20 @@ namespace FileBrowserNP.ViewModels
         public MainWindowViewModel()
         {
             LoadDriveView();    // при запуске программы отображаем список дисков                                        
-            ((DriveViewModel)CurrentViewModel).DriveDoubleClicked += OnDriveDoubleClicked;   // подключен обработчик двойного клика по диску
-            ((DriveViewModel)CurrentViewModel).ItemSelected += OnDriveSelected;    // подключен обработчик выбора диска
-            ((DriveViewModel)CurrentViewModel).Error += OnError;
         }
 
         #region СВОЙСТВА
-       
+
+        private string _currentDirectory = "";
+        private Stack<int> _previousSelectedIndexes = new();
+        
+        private int _selectedIndex = -1;
+        public int SelectedIndex
+        {
+            get { return _selectedIndex; }
+            set { SetProperty(ref _selectedIndex, value); }
+        }
+
         private BindableBase _currentViewModel;
         public BindableBase CurrentViewModel
         {
@@ -65,7 +72,10 @@ namespace FileBrowserNP.ViewModels
         #region ОБРАБОТЧИКИ И МЕТОДЫ ДИСКОВ
         private void LoadDriveView()   // текущая вью-модель переключается на диски
         {
-            CurrentViewModel = new DriveViewModel();      
+            CurrentViewModel = new DriveViewModel();
+            ((DriveViewModel)CurrentViewModel).DriveDoubleClicked += OnDriveDoubleClicked;   // подключен обработчик двойного клика по диску
+            ((DriveViewModel)CurrentViewModel).ItemSelected += OnDriveSelected;    // подключен обработчик выбора диска
+            ((DriveViewModel)CurrentViewModel).Error += OnError;
         }
         public void OnError(object sender, MessageEventArgs e)  // ошибка открытия/чтения дисков, папок и файлов
         {
@@ -78,6 +88,7 @@ namespace FileBrowserNP.ViewModels
             if (e.SelectedItem != null && e.SelectedItem is Drive)
             {
                 Drive drive = (Drive)e.SelectedItem;
+                SelectedIndex = (int)e.SelectedIndex;
                 ImageStatusBar = null;
                 MessageStatusBar = $"[{drive.Label}]  свободно {drive.FreeSpace} из {drive.TotalSpace}";
             }
@@ -85,28 +96,74 @@ namespace FileBrowserNP.ViewModels
         public void OnDriveDoubleClicked(object sender, SelectedItemEventArgs e)  // по диску щелкнули два раза
         {
             if (e.SelectedItem != null && e.SelectedItem is Drive drive)
-            {
-                CurrentViewModel = new FolderViewModel(drive.Name);   // текущая вью-модель переключается на папки
-                ((FolderViewModel)CurrentViewModel).FileDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
-                ((FolderViewModel)CurrentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора диска
-                ((FolderViewModel)CurrentViewModel).Error += OnError;
-            }
+                CreateNewFolderView(drive.Name);
         }
         #endregion
 
         #region ОБРАБОТЧИКИ И МЕТОДЫ ПАПОК/ФАЙЛОВ
-        public void OnFileDoubleClicked(object sender, SelectedItemEventArgs e)  // по папке/файлу щелкнули два раза
+        public void OnFileDoubleClicked(object sender, SelectedItemEventArgs e)  // по папке/файлу щелкнули два раза или назад
         {
-            if (e.SelectedItem != null && e.SelectedItem is Drive drive)
+            if (e.SelectedItem != null)
             {
+                Base myType = (Base)e.SelectedItem;
 
+                Type type = myType.GetType();
+
+                if (type == typeof(Drive))
+                {
+                    CreateNewFolderView(_currentDirectory);
+                    _previousSelectedIndexes.Push(_selectedIndex);
+                    return;
+                }
+
+                if (type == typeof(Folder))
+                {
+                    CreateNewFolderView(_currentDirectory);
+                    _previousSelectedIndexes.Push(_selectedIndex);
+                    return;
+                }
+
+                if (type == typeof(HexFile))
+                    return;
+
+                if (type == typeof(TextFile))
+                    return;
+
+                if (type == typeof(ImageFile))
+                    return;
+
+                if (type == typeof(Back))
+                {
+                    //SelectedIndex = _previousSelectedIndexes.Pop();
+                    if (Directory.GetParent(_currentDirectory) != null)
+                    {
+                        string currentDirectoryRoot = Directory.GetParent(_currentDirectory).FullName;
+                        CreateNewFolderView(currentDirectoryRoot);
+                        return;
+                    }
+                    else
+                        LoadDriveView();
+                }
+                    
             }
         }
+
+        private void CreateNewFolderView(string path)
+        {
+            CurrentViewModel = new FolderViewModel(path);   // текущая вью-модель переключается на папки
+            ((FolderViewModel)CurrentViewModel).FileDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
+            ((FolderViewModel)CurrentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора диска
+            ((FolderViewModel)CurrentViewModel).Error += OnError;
+        }
+
         public void OnFileSelected(object sender, SelectedItemEventArgs e)  // выбрали папку/файл
         {
-            if (e.SelectedItem != null && e.SelectedItem is Drive drive)
+            if (e.SelectedItem != null && e.SelectedItem is Folder folder)
             {
-
+                folder = ((Folder)e.SelectedItem);
+                //string dir = folder.Path;
+                _currentDirectory = Directory.GetParent(folder.Path).FullName;
+                MessageStatusBar = $"Путь: {folder.Path}         Размер: {folder.Size}         Дата и время изменения: {folder.TimeCreated}";
             }
         }
 
