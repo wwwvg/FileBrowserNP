@@ -60,16 +60,16 @@
         </DataTemplate>
 
         <DataTemplate x:Key="DriveTemplate">
-            <Grid>
-                <TextBlock Text="{Binding Name}" >
-                </TextBlock>
-            </Grid>
+            <StackPanel>
+                <Image Source="{Binding Image}" Margin="5,0,5,0"/>
+                <TextBlock Text="{Binding Name}" />
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="FileTemplate">
-            <Grid>
+            <StackPanel>
                 <TextBlock Text="{Binding Name}"></TextBlock>
-            </Grid>
+            </StackPanel>
         </DataTemplate>
 
     </Application.Resources>
