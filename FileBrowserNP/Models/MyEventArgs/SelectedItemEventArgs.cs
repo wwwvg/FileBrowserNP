@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FileBrowserNP.Helpers
+namespace FileBrowserNP.Models.MyEventArgs
 {
     public class SelectedItemEventArgs : EventArgs
     {

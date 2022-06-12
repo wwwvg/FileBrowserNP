@@ -1,11 +1,11 @@
 ﻿using FileBrowserNP.Commands;
 using FileBrowserNP.Models;
-using FileBrowserNP.Helpers;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
 using MainModule.Helpers;
+using FileBrowserNP.Models.MyEventArgs;
 
 namespace FileBrowserNP.ViewModels
 {
@@ -19,12 +19,26 @@ namespace FileBrowserNP.ViewModels
         public DriveViewModel()
         {
             SetDrives();
+            SelectedDrive = (Drive)Drives[0];
         }
 
         #region СВОЙСТВА
         public ObservableCollection<Base> Drives { get; set; } = new();
-        public Drive SelectedDrive { get; set; }
-        public int SelectedIndex { get; set; }
+        //public Drive SelectedDrive { get; set; }
+
+        private Drive _selectedDrive;
+        public Drive SelectedDrive
+        {
+            get { return _selectedDrive; }
+            set { SetProperty(ref _selectedDrive, value); }
+        }
+
+        private int _selectedIndex;
+        public int SelectedIndex
+        {
+            get { return _selectedIndex; }
+            set { SetProperty(ref _selectedIndex, value); }
+        }
         #endregion
 
         #region КОМАНДЫ
@@ -77,7 +91,7 @@ namespace FileBrowserNP.ViewModels
                         TotalSpace = Bytes.SizeSuffix(drive.TotalSize)
                     });
                 }
-                SelectedIndex = 0;
+                
             }
             catch (Exception ex) // не все диски м.б. доступны (например - сетевой)
             {

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FileBrowserNP.Selectors" 
+             xmlns:local1="clr-namespace:MainModule.Helpers"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -20,7 +21,7 @@
     </UserControl.Resources>
     <Grid>
         <!--СПИСОК ПАПОК-->
-        <ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Files}" HorizontalContentAlignment="Stretch" 
+        <local1:ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Files}" HorizontalContentAlignment="Stretch" 
                             SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedFile}">
             <ListView.View>
                 <GridView>
@@ -44,7 +45,7 @@
                     <i:InvokeCommandAction Command="{Binding DoubleClickedCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-        </ListView>
+        </local1:ListView>
         <Grid.InputBindings>
             <KeyBinding Gesture="Enter" Command="{Binding DoubleClickedCommand}"/>
         </Grid.InputBindings>

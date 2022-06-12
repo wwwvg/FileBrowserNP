@@ -1,11 +1,11 @@
 ﻿using FileBrowserNP.Commands;
 using FileBrowserNP.Models;
-using FileBrowserNP.Helpers;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
 using MainModule.Helpers;
+using FileBrowserNP.Models.MyEventArgs;
 
 namespace FileBrowserNP.ViewModels
 {
@@ -14,9 +14,10 @@ namespace FileBrowserNP.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public FolderViewModel(string path)
+        public FolderViewModel(string path, bool isFirstView)
         {
-            SetFoldersAndFiles(path);
+            _isFirstView = isFirstView;
+            SetFoldersAndFiles(path);  
         }
 
         #region СВОЙСТВА
@@ -28,9 +29,16 @@ namespace FileBrowserNP.ViewModels
         }
 
         public Base SelectedFile { get; set; }
-        public int SelectedIndex { get; set; }
+  //      public int SelectedIndex { get; set; }
 
         private bool _isError = false; // для своевременного удаления сообщения об ошибке
+
+        private bool _isFirstView;
+        public bool IsFirstView
+        {
+            get { return _isFirstView; }
+            set { SetProperty(ref _isFirstView, value); }
+        }
         #endregion
 
         #region КОМАНДЫ
@@ -72,7 +80,8 @@ namespace FileBrowserNP.ViewModels
             {
                 DirectoryInfo[] directories = dir.GetDirectories();
 
-                Files.Add(new Back());
+                if(_isFirstView)
+                    Files.Add(new Back());
 
                 foreach (var item in directories)
                 {
@@ -106,8 +115,11 @@ namespace FileBrowserNP.ViewModels
 
             catch (Exception ex) // некоторые системные папки и файлы недоступны, но если запустить программу с админскими привилегиями то все ОК.
             {
-                _isError = true;
-                                        #warning отправить сообщение    
+                var msg = new MessageEventArgs(ex.Message, -1);
+                if(IsFirstView)
+                    Files.Add(new Back());
+                Error?.Invoke(this, msg);
+#warning отправить сообщение    
             }
         }
         #endregion
