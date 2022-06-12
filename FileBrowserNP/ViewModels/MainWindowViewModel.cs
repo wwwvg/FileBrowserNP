@@ -18,15 +18,15 @@ namespace FileBrowserNP.ViewModels
     {
         public MainWindowViewModel()
         {
-            LoadDriveView(0);    // при запуске программы отображаем список дисков                                        
+            LoadDriveView(false, true);    // при запуске программы отображаем список дисков                                        
         }
 
         #region СВОЙСТВА
-
+        private bool _isError;
         private string _currentDirectory = "";
         private Stack<int> _previousSelectedIndexes = new();
         
-        private int _selectedIndex = -1;
+        private int _selectedIndex = 0;
         public int SelectedIndex
         {
             get { return _selectedIndex; }
@@ -77,24 +77,34 @@ namespace FileBrowserNP.ViewModels
         #endregion
 
         #region ОБРАБОТЧИКИ И МЕТОДЫ ДИСКОВ
-        private void LoadDriveView(int selectedIndex)   // текущая вью-модель переключается на диски
-        {  
-            CurrentViewModel = new DriveViewModel();
+        private void LoadDriveView(bool isBack, bool isFirstTime = false)   // текущая вью-модель переключается на диски
+        {
+            if (isBack)
+                CurrentViewModel = new DriveViewModel(_previousSelectedIndexes.Pop());
+            else // если вперед
+            {
+                if(!isFirstTime)
+                    _previousSelectedIndexes.Push(SelectedIndex);
+                CurrentViewModel = new DriveViewModel(0);
+            }
+
             ((DriveViewModel)CurrentViewModel).DriveDoubleClicked += OnDriveDoubleClicked;   // подключен обработчик двойного клика по диску
             ((DriveViewModel)CurrentViewModel).ItemSelected += OnDriveSelected;    // подключен обработчик выбора диска
             ((DriveViewModel)CurrentViewModel).Error += OnError;
-            SetSelection(0, false);
+
+            var drive = ((DriveViewModel)CurrentViewModel);
+            ContentViewModel = new FolderViewModel(drive.SelectedDrive.Name, false, 0, false);
+            MessageStatusBar = $"[{drive.SelectedDrive.Label}]  свободно {drive.SelectedDrive.FreeSpace} из {drive.SelectedDrive.TotalSpace}";
         }
 
-        void SetSelection(int index, bool isBack)
-        {
-            if (index > -1 && index < Files.Count)
-                SelectedIndex = index;
-        }
         public void OnError(object sender, MessageEventArgs e)  // ошибка открытия/чтения дисков, папок и файлов
         {
-            ImageStatusBar = new BitmapImage(new Uri("..\\Icons\\Warning.png", UriKind.Relative));
+            if (e.SelectedIndex == -1)
+                ImageStatusBar = new BitmapImage(new Uri("..\\Icons\\Warning.png", UriKind.Relative));
+            else
+                ImageStatusBar = null;
             MessageStatusBar = e.Message;
+   //         _isError = true;
 #warning по-ходу обработчик отцепляется при ошибке
         }
 
@@ -105,10 +115,13 @@ namespace FileBrowserNP.ViewModels
                 Drive drive = (Drive)e.SelectedItem;
                 SelectedIndex = (int)e.SelectedIndex;
                 ImageStatusBar = null;
-                MessageStatusBar = $"[{drive.Label}]  свободно {drive.FreeSpace} из {drive.TotalSpace}";
+                if (!_isError)
+                    MessageStatusBar = $"[{drive.Label}]  свободно {drive.FreeSpace} из {drive.TotalSpace}";
+                else
+                        _isError = false;
                 _currentDirectory = drive.Name;
 
-                ContentViewModel = new FolderViewModel(_currentDirectory, false);
+                ContentViewModel = new FolderViewModel(_currentDirectory, false, 0, false);  // дочерние папки
                 //((FolderViewModel)ContentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора диска во втором окне
             }
         }
@@ -116,8 +129,9 @@ namespace FileBrowserNP.ViewModels
         {
             if (e.SelectedItem != null && e.SelectedItem is Drive drive)
             {
-                CreateNewFolderView(drive.Name, true);
-                _previousSelectedIndexes.Push(e.SelectedIndex);
+                CreateNewFolderView(drive.Name, true, false);
+                _previousSelectedIndexes.Push(SelectedIndex);
+                MessageStatusBar = "";
             }
         }
         #endregion
@@ -131,16 +145,10 @@ namespace FileBrowserNP.ViewModels
 
                 Type type = myType.GetType();
 
-                if (type == typeof(Drive))
-                {
-                    CreateNewFolderView(_currentDirectory, true);
-                    _previousSelectedIndexes.Push(_selectedIndex);
-                    return;
-                }
-
                 if (type == typeof(Folder))
                 {
-                    CreateNewFolderView(((Folder)e.SelectedItem).Path, true);
+                    CreateNewFolderView(((Folder)e.SelectedItem).Path, true, false);
+                    _selectedIndex = e.SelectedIndex;
                     _previousSelectedIndexes.Push(_selectedIndex);
                     return;
                 }
@@ -156,30 +164,33 @@ namespace FileBrowserNP.ViewModels
 
                 if (type == typeof(Back))
                 {
-                    //SelectedIndex = _previousSelectedIndexes.Pop();
                     if (Directory.GetParent(_currentDirectory) != null)
                     {
                         string currentDirectoryRoot = Directory.GetParent(_currentDirectory).FullName;
-                        CreateNewFolderView(currentDirectoryRoot, true);
+                        CreateNewFolderView(currentDirectoryRoot, true, true);
                         return;
                     }
                     else
-                    {
-                        if (_previousSelectedIndexes.TryPop(out int selectedIndex) && selectedIndex < Files.Count)
-                            LoadDriveView(selectedIndex);
-                        else
-                            LoadDriveView(0);
-                    }
+                        LoadDriveView(true);
                 }
-                    
             }
         }
 
-        private void CreateNewFolderView(string path, bool isFirstView)
+        private void CreateNewFolderView(string path, bool isLeftPanelView, bool isBack)
         {
-                                                                        #warning не очищается статусбар
-            MessageStatusBar = "";
-            CurrentViewModel = new FolderViewModel(path, isFirstView);   // текущая вью-модель переключается на папки
+                                                                       #warning не очищается статусбар
+            if (isBack)
+            {
+                CurrentViewModel = new FolderViewModel(path, isLeftPanelView, _previousSelectedIndexes.Pop(), true);   // текущая вью-модель переключается на папки
+                _currentDirectory = Directory.GetParent(path)?.FullName ?? path;
+            }
+            else
+            {
+                CurrentViewModel = new FolderViewModel(path, isLeftPanelView, 0, false);
+                if(isLeftPanelView)
+                    _previousSelectedIndexes.Push(SelectedIndex);
+                _currentDirectory = path;
+            }
             ((FolderViewModel)CurrentViewModel).FileDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
             ((FolderViewModel)CurrentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора диска
             ((FolderViewModel)CurrentViewModel).Error += OnError;
@@ -193,7 +204,7 @@ namespace FileBrowserNP.ViewModels
                 //string dir = folder.Path;
                 _currentDirectory = Directory.GetParent(folder.Path).FullName;
                 MessageStatusBar = $"Путь: {folder.Path}         Размер: {folder.Size}         Дата и время изменения: {folder.TimeCreated}";
-                ContentViewModel = new FolderViewModel(folder.Path, false);
+                ContentViewModel = new FolderViewModel(folder.Path, false, 0, false);
                // ((FolderViewModel)ContentViewModel).IsFirstView = true;
             }
         }

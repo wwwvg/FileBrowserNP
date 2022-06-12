@@ -13,6 +13,7 @@ namespace MainModule.Helpers
             {
                 Focus(); // фокусировка на выбранном элементе
             }
+
         }
     }
 }

@@ -16,15 +16,14 @@ namespace FileBrowserNP.ViewModels
         /// передается соответствующее сообщение устанавлиываемое главной вью-моделью в статус бар. При двойном щелчке управление 
         /// передается обратно в главную вью-модель, которая далее отображает список каталогов и файлов.
         /// </summary>
-        public DriveViewModel()
+        public DriveViewModel(int selectedIndex)
         {
             SetDrives();
-            SelectedDrive = (Drive)Drives[0];
+            SelectedDrive = (Drive)Drives[(selectedIndex > -1 && selectedIndex < Drives.Count) ? selectedIndex : 0]; // выделяем диск
         }
 
         #region СВОЙСТВА
         public ObservableCollection<Base> Drives { get; set; } = new();
-        //public Drive SelectedDrive { get; set; }
 
         private Drive _selectedDrive;
         public Drive SelectedDrive

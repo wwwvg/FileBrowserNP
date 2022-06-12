@@ -14,10 +14,28 @@ namespace FileBrowserNP.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public FolderViewModel(string path, bool isFirstView)
+        public FolderViewModel(string path, bool isLeftPanelView, int selectedIndex, bool isBack)
         {
-            _isFirstView = isFirstView;
-            SetFoldersAndFiles(path);  
+            _isLeftPanelView = isLeftPanelView;
+            SetFoldersAndFiles(path);
+            if (isLeftPanelView && isBack && Files.Count > 0)
+            {
+                int index = (selectedIndex > -1 && selectedIndex < Files.Count) ? selectedIndex : 0;
+                if (Files[index] is Back)
+                    SelectedFile = (Back)Files[index];
+
+                if (Files[index] is Folder)
+                    SelectedFile = (Folder)Files[index];
+            }
+            else if(isLeftPanelView && Files.Count > 0)
+            {
+                if (Files[0] is Back)
+                    SelectedFile = (Back)Files[0];
+
+                if (Files[0] is Folder)
+                    SelectedFile = (Folder)Files[0];
+            }
+
         }
 
         #region СВОЙСТВА
@@ -28,16 +46,27 @@ namespace FileBrowserNP.ViewModels
             set { SetProperty(ref _files, value); }
         }
 
-        public Base SelectedFile { get; set; }
-  //      public int SelectedIndex { get; set; }
+        private Base _selectedFile;
+        public Base SelectedFile
+        {
+            get { return _selectedFile; }
+            set { SetProperty(ref _selectedFile, value); }
+        }
+
+        private int _selectedIndex;
+        public int SelectedIndex
+        {
+            get { return _selectedIndex; }
+            set { SetProperty(ref _selectedIndex, value); }
+        }
 
         private bool _isError = false; // для своевременного удаления сообщения об ошибке
 
-        private bool _isFirstView;
-        public bool IsFirstView
+        private bool _isLeftPanelView;
+        public bool IsLeftPanelView
         {
-            get { return _isFirstView; }
-            set { SetProperty(ref _isFirstView, value); }
+            get { return _isLeftPanelView; }
+            set { SetProperty(ref _isLeftPanelView, value); }
         }
         #endregion
 
@@ -80,7 +109,7 @@ namespace FileBrowserNP.ViewModels
             {
                 DirectoryInfo[] directories = dir.GetDirectories();
 
-                if(_isFirstView)
+                if(_isLeftPanelView)
                     Files.Add(new Back());
 
                 foreach (var item in directories)
@@ -110,13 +139,12 @@ namespace FileBrowserNP.ViewModels
                     else
                         Files.Add(new HexFile { Name = name, Path = fullPath, Size = size, TimeCreated = time });
                 }
-                SelectedIndex = 0;
             }
 
             catch (Exception ex) // некоторые системные папки и файлы недоступны, но если запустить программу с админскими привилегиями то все ОК.
             {
                 var msg = new MessageEventArgs(ex.Message, -1);
-                if(IsFirstView)
+                if(IsLeftPanelView)
                     Files.Add(new Back());
                 Error?.Invoke(this, msg);
 #warning отправить сообщение    

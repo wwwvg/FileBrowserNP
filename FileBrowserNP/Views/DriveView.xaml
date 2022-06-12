@@ -12,7 +12,7 @@
     <Grid>
         <!--СПИСОК ДИСКОВ-->
         <local:ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Drives}" HorizontalContentAlignment="Stretch" 
-                            SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedDrive}">
+                            SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedDrive, Mode=TwoWay}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="100" CellTemplate="{StaticResource DriveTemplate}">
