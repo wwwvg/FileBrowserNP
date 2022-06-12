@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace MainModule.Helpers
+namespace FileBrowserNP.Helpers
 {
     public enum FileType
     {

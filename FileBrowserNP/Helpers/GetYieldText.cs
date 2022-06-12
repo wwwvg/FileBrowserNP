@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace MainModule.Helpers
+namespace FileBrowserNP.Helpers
 {
     public static class GetYieldText
     {
@@ -47,7 +47,7 @@ namespace MainModule.Helpers
         {
             try
             {
-                _sr = new StreamReader(path, true);
+                _sr = new StreamReader(path, Encoding.UTF8, true);
 
                 StringBuilder sb = new StringBuilder();
                 string? line = string.Empty;

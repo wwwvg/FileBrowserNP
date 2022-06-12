@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace MainModule.Helpers
+namespace FileBrowserNP.Helpers
 {
     public class ListViewItem : System.Windows.Controls.ListViewItem
     {

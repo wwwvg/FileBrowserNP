@@ -6,8 +6,8 @@
     <Grid>
         
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
 
         </Grid.RowDefinitions>
 
@@ -24,7 +24,7 @@
 
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="MouseWheel">
-                <i:InvokeCommandAction Command="{Binding OnMouseWheel}" />
+                <i:InvokeCommandAction Command="{Binding MouseWheelCommand}" />
             </i:EventTrigger>
         </i:Interaction.Triggers>
     </Grid>

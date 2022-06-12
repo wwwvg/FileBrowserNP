@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 
-namespace MainModule.Helpers
+namespace FileBrowserNP.Helpers
 {
     public class ListView : System.Windows.Controls.ListView  // переопределяется ListView для корректного выставления фокуса
     {
         // используется в FileView.xaml, как:
-        // xmlns:local="clr-namespace:MainModule.Helpers"
+        // xmlns:local="clr-namespace:FileBrowserNP.Helpers"
         // ...
         //<local:ListView ItemsSource="{Binding Files}" Grid.Row="1" Margin="5"
         protected override DependencyObject GetContainerForItemOverride()

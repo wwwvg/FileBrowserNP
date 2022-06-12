@@ -16,6 +16,15 @@
             <DataTemplate DataType="{x:Type vm:FolderViewModel}">
                 <view:FolderView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:HexViewModel}">
+                <view:HexView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ImageViewModel}">
+                <view:ImageView />
+            </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TextViewModel}">
+            <view:TextView />
+        </DataTemplate>
     </Window.Resources>
 
     <DockPanel>

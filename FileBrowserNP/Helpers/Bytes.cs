@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MainModule.Helpers
+namespace FileBrowserNP.Helpers
 {
     /// <summary>
     /// Конвертирует байты в килобайты, мегабайты, гигабайты ...

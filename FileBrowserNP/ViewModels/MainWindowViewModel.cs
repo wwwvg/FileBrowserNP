@@ -1,13 +1,8 @@
-﻿using FileBrowserNP.Commands;
-using FileBrowserNP.Models;
+﻿using FileBrowserNP.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FileBrowserNP.Models.MyEventArgs;
@@ -27,53 +22,30 @@ namespace FileBrowserNP.ViewModels
         private Stack<int> _previousSelectedIndexes = new();
         
         private int _selectedIndex = 0;
-        public int SelectedIndex
-        {
-            get { return _selectedIndex; }
-            set { SetProperty(ref _selectedIndex, value); }
-        }
+        public int SelectedIndex { get => _selectedIndex; set => SetProperty(ref _selectedIndex, value);}
 
         private BindableBase _currentViewModel;
-        public BindableBase CurrentViewModel
-        {
-            get => _currentViewModel;
-            set => SetProperty(ref _currentViewModel, value);
-        }
+        public BindableBase CurrentViewModel { get => _currentViewModel; set => SetProperty(ref _currentViewModel, value); }
 
+        
         private BindableBase _contentViewModel;
-        public BindableBase ContentViewModel
-        {
-            get => _contentViewModel;
-            set => SetProperty(ref _contentViewModel, value);
-        }
+        public BindableBase ContentViewModel { get => _contentViewModel; set => SetProperty(ref _contentViewModel, value); }
 
+       
         private ObservableCollection<Base> _files = new(); // список дисков, файлов и каталогов
-        public ObservableCollection<Base> Files
-        {
-            get => _files;
-            set => SetProperty(ref _files, value);
-        }
+        public ObservableCollection<Base> Files { get => _files; set => SetProperty(ref _files, value); }
 
-        private Base _selectedFile = new(); // выбранный элемент
-        public Base SelectedFile
-        {
-            get { return _selectedFile; }
-            set { SetProperty(ref _selectedFile, value); }
-        }
+       
+        private Base _selectedFile = new();
+        public Base SelectedFile { get => _selectedFile; set => SetProperty(ref _selectedFile, value); }
 
+        
         private ImageSource _imageStatusBar;  // значок предупреждения в статусбаре
-        public ImageSource ImageStatusBar
-        {
-            get { return _imageStatusBar; }
-            set { SetProperty(ref _imageStatusBar, value); }
-        }
+        public ImageSource ImageStatusBar { get => _imageStatusBar; set => SetProperty(ref _imageStatusBar, value); }
 
+       
         private string _messageStatusBar;  // информация о дисках, папках, файлов и ошибок в статусбаре
-        public string MessageStatusBar
-        {
-            get { return _messageStatusBar; }
-            set { SetProperty(ref _messageStatusBar, value); }
-        }
+        public string MessageStatusBar { get => _messageStatusBar; set => SetProperty(ref _messageStatusBar, value); }
         #endregion
 
         #region ОБРАБОТЧИКИ И МЕТОДЫ ДИСКОВ
@@ -154,7 +126,10 @@ namespace FileBrowserNP.ViewModels
                 }
 
                 if (type == typeof(HexFile))
+                {
+                    
                     return;
+                }
 
                 if (type == typeof(TextFile))
                     return;
@@ -201,12 +176,19 @@ namespace FileBrowserNP.ViewModels
             if (e.SelectedItem != null && e.SelectedItem is Folder folder)
             {
                 folder = ((Folder)e.SelectedItem);
-                //string dir = folder.Path;
                 _currentDirectory = Directory.GetParent(folder.Path).FullName;
                 MessageStatusBar = $"Путь: {folder.Path}         Размер: {folder.Size}         Дата и время изменения: {folder.TimeCreated}";
                 ContentViewModel = new FolderViewModel(folder.Path, false, 0, false);
-               // ((FolderViewModel)ContentViewModel).IsFirstView = true;
             }
+
+            if (e.SelectedItem != null && e.SelectedItem is HexFile)
+                ContentViewModel = new HexViewModel(((HexFile)e.SelectedItem).Path);            //  вывод НЕХ файла
+
+            if (e.SelectedItem != null && e.SelectedItem is ImageFile)
+                ContentViewModel = new ImageViewModel(((ImageFile)e.SelectedItem).Path);            //  вывод картинки
+
+            if (e.SelectedItem != null && e.SelectedItem is TextFile)
+                ContentViewModel = new TextViewModel(((TextFile)e.SelectedItem).Path);            //  вывод картинки
         }
 
         #endregion

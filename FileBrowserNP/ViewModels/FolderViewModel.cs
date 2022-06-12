@@ -4,7 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
-using MainModule.Helpers;
+using FileBrowserNP.Helpers;
 using FileBrowserNP.Models.MyEventArgs;
 
 namespace FileBrowserNP.ViewModels

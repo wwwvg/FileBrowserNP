@@ -5,12 +5,12 @@
     <Grid>
         
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
 
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" Content="{Binding Header}" FontFamily="Courier New"></Label>
+        <Label Grid.Row="0" Content="{Binding Header}" FontFamily="Courier New"/>
 
         <RichTextBox Grid.Row="1" FontFamily="Courier New" Background="White" IsReadOnly="True" VerticalScrollBarVisibility="Visible">
             <FlowDocument PageHeight="180">
@@ -22,7 +22,7 @@
 
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="MouseWheel">
-                <i:InvokeCommandAction Command="{Binding OnMouseWheel}" />
+                <i:InvokeCommandAction Command="{Binding MouseWheelCommand}" />
             </i:EventTrigger>
         </i:Interaction.Triggers>
         
