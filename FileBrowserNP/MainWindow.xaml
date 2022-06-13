@@ -28,7 +28,18 @@
     </Window.Resources>
 
     <DockPanel>
-        <ToolBar DockPanel.Dock="Top"/>
+        <ToolBar DockPanel.Dock="Top">
+            <Button Command="{Binding AddFolder}" Width="25" Height="25" Margin="5, 0, 0, 0" ToolTip="Добавить каталог">
+                <Image Source="{Binding AddFolderImage}" />
+            </Button>
+            <Button Command="{Binding DeleteItem}" Width="25" Height="25" Margin="10, 0, 0, 0" ToolTip="Удалить выбранный элемент">
+                <Image Source="{Binding DeleteItemImage}"/>
+            </Button>
+            <Button Command="{Binding Refresh}" Width="25" Height="25" Margin="10, 0, 0, 0" ToolTip="Обновить">
+                <Image Source="{Binding RefreshImage}"/>
+            </Button>
+        </ToolBar>
+        
         <StatusBar DockPanel.Dock="Bottom">
             <Image Grid.Column="0" Source="{Binding ImageStatusBar}" Height="20" VerticalAlignment="Center"/>
             <Label Grid.Column="1" Content="{Binding MessageStatusBar}" Margin="5 0 0 0" VerticalAlignment="Center"/>

@@ -47,7 +47,7 @@ namespace FileBrowserNP.Helpers
         {
             try
             {
-                _sr = new StreamReader(path, Encoding.UTF8, true);
+                _sr = new StreamReader(path);        // Encoding.Unicode - дает иероглифы
 
                 StringBuilder sb = new StringBuilder();
                 string? line = string.Empty;

@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FileBrowserNP.Models.MyEventArgs;
+using FileBrowserNP.Commands;
 
 namespace FileBrowserNP.ViewModels
 {
@@ -13,14 +14,22 @@ namespace FileBrowserNP.ViewModels
     {
         public MainWindowViewModel()
         {
-            LoadDriveView(false, true);    // при запуске программы отображаем список дисков                                        
+            LoadDriveView(false, true);    // при запуске программы отображаем список дисков
+            DeleteItemImage = new BitmapImage(new Uri("..\\Icons\\DeleteItem.png", UriKind.Relative));
+            AddFolderImage = new BitmapImage(new Uri("..\\Icons\\AddFolder.png", UriKind.Relative));
+            RefreshImage = new BitmapImage(new Uri("..\\Icons\\Refresh.png", UriKind.Relative));
         }
 
         #region СВОЙСТВА
         private bool _isError;
         private string _currentDirectory = "";
         private Stack<int> _previousSelectedIndexes = new();
-        
+
+        public ImageSource DeleteItemImage { get; set; }
+        public ImageSource AddFolderImage { get; set; }
+        public ImageSource RefreshImage { get; set; }
+
+
         private int _selectedIndex = 0;
         public int SelectedIndex { get => _selectedIndex; set => SetProperty(ref _selectedIndex, value);}
 
@@ -46,6 +55,117 @@ namespace FileBrowserNP.ViewModels
        
         private string _messageStatusBar;  // информация о дисках, папках, файлов и ошибок в статусбаре
         public string MessageStatusBar { get => _messageStatusBar; set => SetProperty(ref _messageStatusBar, value); }
+
+       
+        private bool _canAddFolder; // доступность кнопки Добавить папку
+        public bool CanAddFolder { get => _canAddFolder; set => SetProperty(ref _canAddFolder, value); }
+
+        
+        private bool _canDeleteItem;// доступность кнопки Удалить папку/файл
+        public bool CanDeleteItem { get => _canDeleteItem; set => SetProperty(ref _canDeleteItem, value); }
+        #endregion
+
+        #region КОМАНДЫ И ОБРАБОТЧИКИ
+        #region ДОБАВИТЬ
+        private DelegateCommand _addFolder;
+        public DelegateCommand AddFolder => _addFolder ?? (_addFolder = new DelegateCommand(o => ExecuteAddFolder(), o => CanExecuteAddFolder()));
+
+        void ExecuteAddFolder()
+        {
+            ShowAddFolderDialog();
+        }
+
+        bool CanExecuteAddFolder()
+        {
+            if(_currentViewModel is FolderViewModel)
+                return true;
+            return false;
+        }
+
+        void ShowAddFolderDialog()
+        {
+            //_dialogService.ShowAddFolderDialog(_currentDirectory, r =>
+            //{
+            //    if (r.Result == ButtonResult.Yes)
+            //    {
+            //        try
+            //        {
+            //            string newFolderName = r.Parameters.GetValue<string>("NewFolderName");
+            //            newFolderName = Path.Combine(_currentDirectory, newFolderName);
+            //            FileSystem.CreateDirectory(newFolderName);
+            //            _eventAggregator.GetEvent<RefreshRequested>().Publish();   //==========> сообщение FileViewModel на обновление списка файлов
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            _eventAggregator.GetEvent<Error>().Publish(ex.Message); //==========> сообщение ErrorViewModel если не удается удалить
+            //        }
+            //    }
+            //});
+        }
+        #endregion
+
+        #region УДАЛИТЬ
+        private DelegateCommand _deleteItem;
+        public DelegateCommand DeleteItem => _deleteItem ?? (_deleteItem = new DelegateCommand( o => ExecuteDeleteItem(), o => CanExecuteDeleteItem()));
+
+        void ExecuteDeleteItem()
+        {
+            ShowDeleteDialog();
+        }
+
+        bool CanExecuteDeleteItem()
+        {
+            // если это файловое представление и выбранный элемент не является Back
+            if (_currentViewModel is FolderViewModel && !(((FolderViewModel)_currentViewModel).SelectedFile is Back))         
+                return true;
+
+            return false;
+        }
+
+        private void ShowDeleteDialog()
+        {
+            //_dialogService.ShowDeleteDialog(_fileInfoModel?.FullPath, r =>
+            //{
+            //    if (r.Result == ButtonResult.Yes)
+            //    {
+            //        try
+            //        {
+            //            bool moveToRecycleBin = r.Parameters.GetValue<bool>("MoveToRecycleBin");
+            //            if (moveToRecycleBin) // переместить в корзину или удалить навсегда
+            //            {
+            //                if (_fileInfoModel.Type == Helpers.FileType.Folder)
+            //                    FileSystem.DeleteDirectory(_fileInfoModel.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            //                if (_fileInfoModel.Type == Helpers.FileType.Text || _fileInfoModel.Type == Helpers.FileType.Bin || _fileInfoModel.Type == Helpers.FileType.Image)
+            //                    FileSystem.DeleteFile(_fileInfoModel.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            //            }
+            //            else
+            //            {
+            //                if (_fileInfoModel.Type == Helpers.FileType.Folder)
+            //                    Directory.Delete(_fileInfoModel.FullPath, true);
+            //                if (_fileInfoModel.Type == Helpers.FileType.Text || _fileInfoModel.Type == Helpers.FileType.Bin || _fileInfoModel.Type == Helpers.FileType.Image)
+            //                    File.Delete(_fileInfoModel.FullPath);
+            //            }
+            //            _eventAggregator.GetEvent<RefreshRequested>().Publish();   //==========> сообщение FileViewModel на обновление списка файлов
+
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            _eventAggregator.GetEvent<Error>().Publish(ex.Message); //==========> сообщение ErrorViewModel если не удается удалить
+            //        }
+            //    }
+            //});
+        }
+        #endregion
+
+        #region ОБНОВИТЬ
+        private DelegateCommand _refresh;
+        public DelegateCommand Refresh => _refresh ?? (_refresh = new DelegateCommand( o=> ExecuteRefresh()));
+
+        void ExecuteRefresh()
+        {
+            
+        }
+        #endregion
         #endregion
 
         #region ОБРАБОТЧИКИ И МЕТОДЫ ДИСКОВ
@@ -67,17 +187,6 @@ namespace FileBrowserNP.ViewModels
             var drive = ((DriveViewModel)CurrentViewModel);
             ContentViewModel = new FolderViewModel(drive.SelectedDrive.Name, false, 0, false);
             MessageStatusBar = $"[{drive.SelectedDrive.Label}]  свободно {drive.SelectedDrive.FreeSpace} из {drive.SelectedDrive.TotalSpace}";
-        }
-
-        public void OnError(object sender, MessageEventArgs e)  // ошибка открытия/чтения дисков, папок и файлов
-        {
-            if (e.SelectedIndex == -1)
-                ImageStatusBar = new BitmapImage(new Uri("..\\Icons\\Warning.png", UriKind.Relative));
-            else
-                ImageStatusBar = null;
-            MessageStatusBar = e.Message;
-   //         _isError = true;
-#warning по-ходу обработчик отцепляется при ошибке
         }
 
         private void OnDriveSelected(object sender, SelectedItemEventArgs e)   // выбрали диск
@@ -177,21 +286,37 @@ namespace FileBrowserNP.ViewModels
             {
                 folder = ((Folder)e.SelectedItem);
                 _currentDirectory = Directory.GetParent(folder.Path).FullName;
-                MessageStatusBar = $"Путь: {folder.Path}         Размер: {folder.Size}         Дата и время изменения: {folder.TimeCreated}";
+  //              MessageStatusBar = $"Путь: {folder.Path}         Размер: {folder.Size}         Дата и время изменения: {folder.TimeCreated}";
                 ContentViewModel = new FolderViewModel(folder.Path, false, 0, false);
             }
 
             if (e.SelectedItem != null && e.SelectedItem is HexFile)
+            {
                 ContentViewModel = new HexViewModel(((HexFile)e.SelectedItem).Path);            //  вывод НЕХ файла
+                ((HexViewModel)ContentViewModel).Error += OnError;
+            }
 
             if (e.SelectedItem != null && e.SelectedItem is ImageFile)
                 ContentViewModel = new ImageViewModel(((ImageFile)e.SelectedItem).Path);            //  вывод картинки
 
             if (e.SelectedItem != null && e.SelectedItem is TextFile)
                 ContentViewModel = new TextViewModel(((TextFile)e.SelectedItem).Path);            //  вывод картинки
+
+            if (e.SelectedItem != null && e.SelectedItem is Back)
+                ContentViewModel = new BackViewModel();            //  отображение пустой правой панели
         }
 
         #endregion
 
+        public void OnError(object sender, MessageEventArgs e)  // ошибка открытия/чтения дисков, папок и файлов
+        {
+            if (e.SelectedIndex == -1)
+                ImageStatusBar = new BitmapImage(new Uri("..\\Icons\\Warning.png", UriKind.Relative));
+            else
+                ImageStatusBar = null;
+            MessageStatusBar = e.Message;
+            _isError = true;
+#warning по-ходу обработчик отцепляется при ошибке
+        }
     }
 }

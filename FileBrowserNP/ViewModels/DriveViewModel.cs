@@ -81,7 +81,6 @@ namespace FileBrowserNP.ViewModels
 
                 foreach (var drive in drives) //добавляем их в список
                 {
-
                     Drives.Add(new Drive()
                     {
                         Name = drive.Name,
