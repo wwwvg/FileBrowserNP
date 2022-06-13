@@ -45,4 +45,9 @@
     <Resource Include="Icons\Warning2.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\Dialogs\" />
+    <Folder Include="Views\Dialogs\" />
+  </ItemGroup>
+
 </Project>

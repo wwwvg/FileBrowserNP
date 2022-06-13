@@ -6,6 +6,8 @@ using System.IO;
 using System.Windows.Input;
 using FileBrowserNP.Helpers;
 using FileBrowserNP.Models.MyEventArgs;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace FileBrowserNP.ViewModels
 {
@@ -17,7 +19,7 @@ namespace FileBrowserNP.ViewModels
         public FolderViewModel(string path, bool isLeftPanelView, int selectedIndex, bool isBack)
         {
             _isLeftPanelView = isLeftPanelView;
-            SetFoldersAndFiles(path);
+            SetFoldersAndFiles(path, !isBack);
             if (isLeftPanelView && isBack && Files.Count > 0)
             {
                 int index = (selectedIndex > -1 && selectedIndex < Files.Count) ? selectedIndex : 0;
@@ -30,11 +32,15 @@ namespace FileBrowserNP.ViewModels
             else if(isLeftPanelView && Files.Count > 0)
             {
                 if (Files[0] is Back)
+                {
                     SelectedFile = (Back)Files[0];
+                }
 
                 if (Files[0] is Folder)
                     SelectedFile = (Folder)Files[0];
             }
+            else if (isLeftPanelView && (Files.Count > 0 && (Files[0] is Back)))
+                SelectedFile = (Back)Files[0];
 
         }
 
@@ -72,10 +78,10 @@ namespace FileBrowserNP.ViewModels
 
         #region КОМАНДЫ
         private DelegateCommand _doubleClickedCommand;
-        public DelegateCommand DoubleClickedCommand =>  _doubleClickedCommand ?? (_doubleClickedCommand = new DelegateCommand(o => OnDoubleClickedCommand()));
+        public DelegateCommand DoubleClickedCommand =>  _doubleClickedCommand ?? (_doubleClickedCommand = new DelegateCommand(OnDoubleClickedCommand));
 
         private DelegateCommand _selectedCommand;
-        public DelegateCommand SelectedCommand =>  _selectedCommand ?? (_selectedCommand = new DelegateCommand(o => OnItemSelected()));
+        public DelegateCommand SelectedCommand =>  _selectedCommand ?? (_selectedCommand = new DelegateCommand(OnItemSelected));
 
         #endregion
 
@@ -93,15 +99,21 @@ namespace FileBrowserNP.ViewModels
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
-            FileSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex));
+            FileSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles()));
         }
         private void OnDoubleClickedCommand()  // двойной щелчок. главной вьюмодели передается путь к файлу и выбранный индекс
         {
-            FileDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex));
+            FileDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles()));
         }
 
+        private List<string> GetFiles()
+        {
+            var listOfFiles = from file in Files select file.Name.Replace("[", "").Replace("]", "");
+            List<string> fileNames = listOfFiles.ToList();
+            return fileNames;
+        }
 
-        private void SetFoldersAndFiles(string path) // добавление папок и файлов
+        private void SetFoldersAndFiles(string path, bool isForwardToSubFolders) // добавление папок и файлов
         {
             Files.Clear();
             DirectoryInfo dir = new DirectoryInfo($"{path}");
@@ -139,6 +151,9 @@ namespace FileBrowserNP.ViewModels
                     else
                         Files.Add(new HexFile { Name = name, Path = fullPath, Size = size, TimeCreated = time });
                 }
+                //if(isForwardToSubFolders && Files.Count > 0)
+                //    SelectedFile = Files[0];
+
             }
 
             catch (Exception ex) // некоторые системные папки и файлы недоступны, но если запустить программу с админскими привилегиями то все ОК.

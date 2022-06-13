@@ -40,7 +40,7 @@ namespace FileBrowserNP.ViewModels
 
         #region КОМАНДА СКРОЛЛА
         private DelegateCommand _mouseWheelCommand;
-        public DelegateCommand MouseWheelCommand => _mouseWheelCommand ?? (_mouseWheelCommand = new DelegateCommand(o => ExecuteScrollChanged()));
+        public DelegateCommand MouseWheelCommand => _mouseWheelCommand ?? (_mouseWheelCommand = new DelegateCommand(ExecuteScrollChanged));
       
         void ExecuteScrollChanged()
         {

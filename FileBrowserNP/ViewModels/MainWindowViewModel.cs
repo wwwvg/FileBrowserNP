@@ -7,6 +7,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FileBrowserNP.Models.MyEventArgs;
 using FileBrowserNP.Commands;
+using Views.Dialogs;
+using ViewModels.Dialogs;
+using Microsoft.VisualBasic.FileIO;
+using System.Linq;
 
 namespace FileBrowserNP.ViewModels
 {
@@ -21,6 +25,10 @@ namespace FileBrowserNP.ViewModels
         }
 
         #region СВОЙСТВА
+        IDialogService _dialogService = new DialogService();
+
+        private List<string> _listOfFiles = new();
+
         private bool _isError;
         private string _currentDirectory = "";
         private Stack<int> _previousSelectedIndexes = new();
@@ -68,7 +76,7 @@ namespace FileBrowserNP.ViewModels
         #region КОМАНДЫ И ОБРАБОТЧИКИ
         #region ДОБАВИТЬ
         private DelegateCommand _addFolder;
-        public DelegateCommand AddFolder => _addFolder ?? (_addFolder = new DelegateCommand(o => ExecuteAddFolder(), o => CanExecuteAddFolder()));
+        public DelegateCommand AddFolder => _addFolder ?? (_addFolder = new DelegateCommand(ExecuteAddFolder, CanExecuteAddFolder).ObservesProperty(() => CanAddFolder));
 
         void ExecuteAddFolder()
         {
@@ -77,36 +85,56 @@ namespace FileBrowserNP.ViewModels
 
         bool CanExecuteAddFolder()
         {
-            if(_currentViewModel is FolderViewModel)
-                return true;
-            return false;
+            return CanAddFolder;
+        }
+
+        void ChangeCanExecuteAddFolder()
+        {
+            if (_currentDirectory == null || _currentDirectory == string.Empty)
+            {
+                CanAddFolder = false;
+                return;
+            }
+            _currentDirectory = _currentDirectory;
+            CanAddFolder = true;
         }
 
         void ShowAddFolderDialog()
-        {
-            //_dialogService.ShowAddFolderDialog(_currentDirectory, r =>
-            //{
-            //    if (r.Result == ButtonResult.Yes)
-            //    {
-            //        try
-            //        {
-            //            string newFolderName = r.Parameters.GetValue<string>("NewFolderName");
-            //            newFolderName = Path.Combine(_currentDirectory, newFolderName);
-            //            FileSystem.CreateDirectory(newFolderName);
-            //            _eventAggregator.GetEvent<RefreshRequested>().Publish();   //==========> сообщение FileViewModel на обновление списка файлов
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            _eventAggregator.GetEvent<Error>().Publish(ex.Message); //==========> сообщение ErrorViewModel если не удается удалить
-            //        }
-            //    }
-            //});
+        { 
+            Directory.GetDirectories(_currentDirectory);
+            List<string> folderNames = new();
+            foreach (string folderName in Directory.GetDirectories(_currentDirectory).ToList<string>())
+                folderNames.Add((string)Path.GetFileName(folderName));
+
+            var vmAddFolder = new AddFolderDialogViewModel(Directory.GetDirectories(_currentDirectory).ToList<string>());
+            vmAddFolder.CurrentDirectory = _currentDirectory;
+            bool createFolder = false;
+
+            _dialogService.ShowDialog<AddFolderDialogViewModel>(vmAddFolder, result =>
+            {
+                createFolder = (bool)result;
+            });
+
+            if(createFolder)
+            {
+                string newFolderName = vmAddFolder.NewFolderName;
+                newFolderName = Path.Combine(_currentDirectory, newFolderName);
+                try
+                {
+                    FileSystem.CreateDirectory(newFolderName);
+                    CreateNewFolderView(_currentDirectory, true, false, true);
+                }
+                catch(Exception ex)
+                {
+                    
+                }
+            }
         }
         #endregion
 
         #region УДАЛИТЬ
         private DelegateCommand _deleteItem;
-        public DelegateCommand DeleteItem => _deleteItem ?? (_deleteItem = new DelegateCommand( o => ExecuteDeleteItem(), o => CanExecuteDeleteItem()));
+        public DelegateCommand DeleteItem => _deleteItem ?? (_deleteItem = new DelegateCommand( ExecuteDeleteItem, CanExecuteDeleteItem));
 
         void ExecuteDeleteItem()
         {
@@ -159,7 +187,7 @@ namespace FileBrowserNP.ViewModels
 
         #region ОБНОВИТЬ
         private DelegateCommand _refresh;
-        public DelegateCommand Refresh => _refresh ?? (_refresh = new DelegateCommand( o=> ExecuteRefresh()));
+        public DelegateCommand Refresh => _refresh ?? (_refresh = new DelegateCommand(ExecuteRefresh));
 
         void ExecuteRefresh()
         {
@@ -189,7 +217,7 @@ namespace FileBrowserNP.ViewModels
             MessageStatusBar = $"[{drive.SelectedDrive.Label}]  свободно {drive.SelectedDrive.FreeSpace} из {drive.SelectedDrive.TotalSpace}";
         }
 
-        private void OnDriveSelected(object sender, SelectedItemEventArgs e)   // выбрали диск
+        private void OnDriveSelected(object sender, SelectedDriveEventArgs e)   // выбрали диск
         {
             if (e.SelectedItem != null && e.SelectedItem is Drive)
             {
@@ -206,11 +234,12 @@ namespace FileBrowserNP.ViewModels
                 //((FolderViewModel)ContentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора диска во втором окне
             }
         }
-        public void OnDriveDoubleClicked(object sender, SelectedItemEventArgs e)  // по диску щелкнули два раза -> создаем вместо дисков каталоги, справа дочерние каталоги
+        public void OnDriveDoubleClicked(object sender, SelectedDriveEventArgs e)  // по диску щелкнули два раза -> создаем вместо дисков каталоги, справа дочерние каталоги
         {
             if (e.SelectedItem != null && e.SelectedItem is Drive drive)
             {
                 CreateNewFolderView(drive.Name, true, false);
+                ChangeCanExecuteAddFolder();
                 _previousSelectedIndexes.Push(SelectedIndex);
                 MessageStatusBar = "";
             }
@@ -260,7 +289,7 @@ namespace FileBrowserNP.ViewModels
             }
         }
 
-        private void CreateNewFolderView(string path, bool isLeftPanelView, bool isBack)
+        private void CreateNewFolderView(string path, bool isLeftPanelView, bool isBack, bool isRefreshRequested = false)
         {
                                                                        #warning не очищается статусбар
             if (isBack)
@@ -271,22 +300,28 @@ namespace FileBrowserNP.ViewModels
             else
             {
                 CurrentViewModel = new FolderViewModel(path, isLeftPanelView, 0, false);
-                if(isLeftPanelView)
+                if(isLeftPanelView && !isRefreshRequested)
                     _previousSelectedIndexes.Push(SelectedIndex);
                 _currentDirectory = path;
             }
             ((FolderViewModel)CurrentViewModel).FileDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
-            ((FolderViewModel)CurrentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора диска
+            ((FolderViewModel)CurrentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора папок/файлов
             ((FolderViewModel)CurrentViewModel).Error += OnError;
         }
 
         public void OnFileSelected(object sender, SelectedItemEventArgs e)  // выбрали папку/файл
         {
+            if (e.SelectedItem is Back)
+            {
+                ContentViewModel = new BackViewModel();            //  отображение пустой правой панели
+                MessageStatusBar = $"Назад к {_currentDirectory}";
+            }
+
             if (e.SelectedItem != null && e.SelectedItem is Folder folder)
             {
                 folder = ((Folder)e.SelectedItem);
                 _currentDirectory = Directory.GetParent(folder.Path).FullName;
-  //              MessageStatusBar = $"Путь: {folder.Path}         Размер: {folder.Size}         Дата и время изменения: {folder.TimeCreated}";
+                MessageStatusBar = $"Путь: {folder.Path}         Размер: {folder.Size}         Дата и время изменения: {folder.TimeCreated}";
                 ContentViewModel = new FolderViewModel(folder.Path, false, 0, false);
             }
 
@@ -300,10 +335,14 @@ namespace FileBrowserNP.ViewModels
                 ContentViewModel = new ImageViewModel(((ImageFile)e.SelectedItem).Path);            //  вывод картинки
 
             if (e.SelectedItem != null && e.SelectedItem is TextFile)
-                ContentViewModel = new TextViewModel(((TextFile)e.SelectedItem).Path);            //  вывод картинки
+                ContentViewModel = new TextViewModel(((TextFile)e.SelectedItem).Path);            //  вывод текста
 
-            if (e.SelectedItem != null && e.SelectedItem is Back)
-                ContentViewModel = new BackViewModel();            //  отображение пустой правой панели
+            _listOfFiles = e.Files;
+            //if (e.SelectedItem != null && e.SelectedItem is Back)
+            //{
+            //    ContentViewModel = new BackViewModel();            //  отображение пустой правой панели
+            //    ((BackViewModel)ContentViewModel).FileSelected += OnFileSelected;
+            //}
         }
 
         #endregion

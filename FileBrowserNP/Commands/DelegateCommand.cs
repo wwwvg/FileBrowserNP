@@ -1,81 +1,103 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace FileBrowserNP.Commands
 {
-    public class DelegateCommand : ICommand
+    /// <summary>
+    /// An <see cref="ICommand"/> whose delegates do not take any parameters for <see cref="Execute()"/> and <see cref="CanExecute()"/>.
+    /// </summary>
+    /// <see cref="DelegateCommandBase"/>
+    /// <see cref="DelegateCommand{T}"/>
+    public class DelegateCommand : DelegateCommandBase
     {
-        /// <summary>
-        /// Action to be performed when this command is executed
-        /// </summary>
-        private Action<object> executionAction;
+        Action _executeMethod;
+        Func<bool> _canExecuteMethod;
 
         /// <summary>
-        /// Predicate to determine if the command is valid for execution
+        /// Creates a new instance of <see cref="DelegateCommand"/> with the <see cref="Action"/> to invoke on execution.
         /// </summary>
-        private Predicate<object> canExecutePredicate;
-
-        /// <summary>
-        /// Initializes a new instance of the DelegateCommand class.
-        /// The command will always be valid for execution.
-        /// </summary>
-        /// <param name="execute">The delegate to call on execution</param>
-        public DelegateCommand(Action<object> execute)
-            : this(execute, null)
+        /// <param name="executeMethod">The <see cref="Action"/> to invoke when <see cref="ICommand.Execute(object)"/> is called.</param>
+        public DelegateCommand(Action executeMethod)
+            : this(executeMethod, () => true)
         {
+
         }
 
         /// <summary>
-        /// Initializes a new instance of the DelegateCommand class.
+        /// Creates a new instance of <see cref="DelegateCommand"/> with the <see cref="Action"/> to invoke on execution
+        /// and a <see langword="Func" /> to query for determining if the command can execute.
         /// </summary>
-        /// <param name="execute">The delegate to call on execution</param>
-        /// <param name="canExecute">The predicate to determine if command is valid for execution</param>
-        public DelegateCommand(Action<object> execute, Predicate<object> canExecute)
+        /// <param name="executeMethod">The <see cref="Action"/> to invoke when <see cref="ICommand.Execute"/> is called.</param>
+        /// <param name="canExecuteMethod">The <see cref="Func{TResult}"/> to invoke when <see cref="ICommand.CanExecute"/> is called</param>
+        public DelegateCommand(Action executeMethod, Func<bool> canExecuteMethod)
+            : base()
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException("execute");
-            }
+            if (executeMethod == null || canExecuteMethod == null)
+                throw new ArgumentNullException(nameof(executeMethod));
 
-            this.executionAction = execute;
-            this.canExecutePredicate = canExecute;
+            _executeMethod = executeMethod;
+            _canExecuteMethod = canExecuteMethod;
+        }
+
+        ///<summary>
+        /// Executes the command.
+        ///</summary>
+        public void Execute()
+        {
+            _executeMethod();
         }
 
         /// <summary>
-        /// Raised when CanExecute is changed
+        /// Determines if the command can be executed.
         /// </summary>
-        public event EventHandler CanExecuteChanged
+        /// <returns>Returns <see langword="true"/> if the command can execute,otherwise returns <see langword="false"/>.</returns>
+        public bool CanExecute()
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            return _canExecuteMethod();
         }
 
         /// <summary>
-        /// Executes the delegate backing this DelegateCommand
+        /// Handle the internal invocation of <see cref="ICommand.Execute(object)"/>
         /// </summary>
-        /// <param name="parameter">parameter to pass to predicate</param>
-        /// <returns>True if command is valid for execution</returns>
-        public bool CanExecute(object parameter)
+        /// <param name="parameter">Command Parameter</param>
+        protected override void Execute(object parameter)
         {
-            return this.canExecutePredicate == null ? true : this.canExecutePredicate(parameter);
+            Execute();
         }
 
         /// <summary>
-        /// Executes the delegate backing this DelegateCommand
+        /// Handle the internal invocation of <see cref="ICommand.CanExecute(object)"/>
         /// </summary>
-        /// <param name="parameter">parameter to pass to delegate</param>
-        /// <exception cref="InvalidOperationException">Thrown if CanExecute returns false</exception>
-        public void Execute(object parameter)
+        /// <param name="parameter"></param>
+        /// <returns><see langword="true"/> if the Command Can Execute, otherwise <see langword="false" /></returns>
+        protected override bool CanExecute(object parameter)
         {
-            if (!this.CanExecute(parameter))
-            {
-                throw new InvalidOperationException("The command is not valid for execution, check the CanExecute method before attempting to execute.");
-            }
-            this.executionAction(parameter);
+            return CanExecute();
+        }
+
+        /// <summary>
+        /// Observes a property that implements INotifyPropertyChanged, and automatically calls DelegateCommandBase.RaiseCanExecuteChanged on property changed notifications.
+        /// </summary>
+        /// <typeparam name="T">The object type containing the property specified in the expression.</typeparam>
+        /// <param name="propertyExpression">The property expression. Example: ObservesProperty(() => PropertyName).</param>
+        /// <returns>The current instance of DelegateCommand</returns>
+        public DelegateCommand ObservesProperty<T>(Expression<Func<T>> propertyExpression)
+        {
+            ObservesPropertyInternal(propertyExpression);
+            return this;
+        }
+
+        /// <summary>
+        /// Observes a property that is used to determine if this command can execute, and if it implements INotifyPropertyChanged it will automatically call DelegateCommandBase.RaiseCanExecuteChanged on property changed notifications.
+        /// </summary>
+        /// <param name="canExecuteExpression">The property expression. Example: ObservesCanExecute(() => PropertyName).</param>
+        /// <returns>The current instance of DelegateCommand</returns>
+        public DelegateCommand ObservesCanExecute(Expression<Func<bool>> canExecuteExpression)
+        {
+            _canExecuteMethod = canExecuteExpression.Compile();
+            ObservesPropertyInternal(canExecuteExpression);
+            return this;
         }
     }
 }

@@ -43,18 +43,18 @@ namespace FileBrowserNP.ViewModels
         #region КОМАНДЫ
         private DelegateCommand _doubleClickedCommand;
         public DelegateCommand DoubleClickedCommand =>
-            _doubleClickedCommand ?? (_doubleClickedCommand = new DelegateCommand(o => OnDoubleClickedCommand()));
+            _doubleClickedCommand ?? (_doubleClickedCommand = new DelegateCommand(OnDoubleClickedCommand));
 
         private DelegateCommand _selectedCommand;
         public DelegateCommand SelectedCommand =>
-            _selectedCommand ?? (_selectedCommand = new DelegateCommand(o => OnItemSelected()));
+            _selectedCommand ?? (_selectedCommand = new DelegateCommand(OnItemSelected));
 
         #endregion
 
         #region СОБЫТИЯ
-        public event EventHandler<SelectedItemEventArgs> DriveDoubleClicked;     // событие двойного клика
+        public event EventHandler<SelectedDriveEventArgs> DriveDoubleClicked;     // событие двойного клика
 
-        public event EventHandler<SelectedItemEventArgs> ItemSelected;             // событие выбранного элемента
+        public event EventHandler<SelectedDriveEventArgs> ItemSelected;             // событие выбранного элемента
 
         public event EventHandler<MessageEventArgs> Error;
 
@@ -63,11 +63,11 @@ namespace FileBrowserNP.ViewModels
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
-            ItemSelected?.Invoke(this, new SelectedItemEventArgs(SelectedDrive, SelectedIndex));
+            ItemSelected?.Invoke(this, new SelectedDriveEventArgs(SelectedDrive, SelectedIndex));
         }
         private void OnDoubleClickedCommand()  // двойной щелчок. главной вьюмодели передается путь к файлу и выбранный индекс
         {
-            DriveDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedDrive, SelectedIndex));
+            DriveDoubleClicked?.Invoke(this, new SelectedDriveEventArgs(SelectedDrive, SelectedIndex));
         }
         private void SetDrives()
         {
