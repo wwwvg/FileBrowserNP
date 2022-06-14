@@ -27,7 +27,6 @@ namespace FileBrowserNP.ViewModels
 
         #region ВЫВОД КАРТИНКИ НА ЭКРАН
 
-        public event EventHandler<MessageEventArgs> Error;
         void SetImage()
         {
             try
@@ -45,7 +44,7 @@ namespace FileBrowserNP.ViewModels
             }
             catch (Exception ex)
             {
-
+                throw (ex);
             }
         }
         #endregion

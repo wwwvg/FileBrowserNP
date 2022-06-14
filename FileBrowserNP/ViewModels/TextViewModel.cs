@@ -48,7 +48,6 @@ namespace FileBrowserNP.ViewModels
         #endregion
 
         #region УСТАНОВКА ПЕРВЫХ 100 ЛИНИЙ
-        public event EventHandler<MessageEventArgs> Error;
         private IEnumerator<string> _enumerator;
         public void SetFirstLines()
         {
@@ -74,7 +73,7 @@ namespace FileBrowserNP.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Error?.Invoke(this, new MessageEventArgs(ex.Message, -1));
+                    throw (ex);
                 }
             }
         }

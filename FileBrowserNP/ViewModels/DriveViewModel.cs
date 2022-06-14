@@ -56,8 +56,6 @@ namespace FileBrowserNP.ViewModels
 
         public event EventHandler<SelectedDriveEventArgs> ItemSelected;             // событие выбранного элемента
 
-        public event EventHandler<MessageEventArgs> Error;
-
         #endregion
                                                                                         #warning зачем передаешь индекс?
         #region ОБРАБОТЧИКИ И МЕТОДЫ
@@ -93,7 +91,7 @@ namespace FileBrowserNP.ViewModels
             }
             catch (Exception ex) // не все диски м.б. доступны (например - сетевой)
             {
-                Error?.Invoke(this, new MessageEventArgs(ex.Message, SelectedIndex));
+                throw (ex);
             }
         }
         #endregion

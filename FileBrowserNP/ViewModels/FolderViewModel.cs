@@ -95,8 +95,6 @@ namespace FileBrowserNP.ViewModels
 
         public event EventHandler<SelectedItemEventArgs> FileSelected;             // событие выбранного элемента
 
-        public event EventHandler<MessageEventArgs> Error;
-
         #endregion
                                                                                                 
         #region ОБРАБОТЧИКИ И МЕТОДЫ
@@ -164,10 +162,9 @@ namespace FileBrowserNP.ViewModels
 
             catch (Exception ex) // некоторые системные папки и файлы недоступны, но если запустить программу с админскими привилегиями то все ОК.
             {
-                var msg = new MessageEventArgs(ex.Message, -1);
                 if(IsLeftPanelView)
                     Files.Add(new Back());
-                Error?.Invoke(this, msg);
+                throw(ex);
   
 #warning отправить сообщение    
             }
