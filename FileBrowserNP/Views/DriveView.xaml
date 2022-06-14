@@ -20,6 +20,7 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
+
             <!--КОМАНДЫ-->
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">

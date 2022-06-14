@@ -56,6 +56,14 @@ namespace FileBrowserNP.ViewModels
             set { SetProperty(ref _selectedFile, value); }
         }
 
+        private List<Base> _selectedFiles;
+        public List<Base> SelectedFiles
+        {
+            get { return _selectedFiles; }
+            set { SetProperty(ref _selectedFiles, value); }
+        }
+        
+
         private int _selectedIndex;
         public int SelectedIndex
         {

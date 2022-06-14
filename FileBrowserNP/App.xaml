@@ -31,7 +31,8 @@
         <DataTemplate x:Key="DriveTemplate">
             <StackPanel Orientation="Horizontal">
                 <Image Source = "./Icons/HardDrive.png" Height="20"/>
-                <TextBlock Text="{Binding Name}" Height="20"/>
+                <TextBlock Text="{Binding Name}" Height="20">
+                          </TextBlock>
             </StackPanel>
         </DataTemplate>
 
