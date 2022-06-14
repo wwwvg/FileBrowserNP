@@ -5,7 +5,7 @@ namespace FileBrowserNP.Helpers
 {
     public class ListViewItem : System.Windows.Controls.ListViewItem
     {
-        protected override void OnSelected(RoutedEventArgs e) 
+        protected override void OnSelected(RoutedEventArgs e)
         {
             base.OnSelected(e);
 
@@ -13,7 +13,7 @@ namespace FileBrowserNP.Helpers
             {
                 Focus(); // фокусировка на выбранном элементе
             }
-
         }
+       
     }
 }

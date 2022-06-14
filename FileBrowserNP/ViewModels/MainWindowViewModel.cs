@@ -282,12 +282,38 @@ namespace FileBrowserNP.ViewModels
 
                 if (type == typeof(TextFile))
                 {
-                    Process.Start("Notepad.exe", GetSelectedFullFileName());
-                    return;
+                    try
+                    {
+                        Process.Start("Notepad.exe", GetSelectedFullFileName());
+                        return;
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageStatusBar = ex.Message;
+                        return;
+                    }
                 }
 
                 if (type == typeof(ImageFile))
-                    return;
+                {
+                    try
+                    {
+                        string Location_ToOpen = GetSelectedFullFileName();
+                        if (!File.Exists(Location_ToOpen))
+                        {
+                            return;
+                        }
+
+                        string argument = "/open, \"" + Location_ToOpen + "\"";
+
+                        System.Diagnostics.Process.Start("explorer.exe", argument);
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageStatusBar = ex.Message;
+                    }
+                }
 
                 if (type == typeof(Back))
                 {
@@ -342,17 +368,24 @@ namespace FileBrowserNP.ViewModels
                // ((FolderViewModel)ContentViewModel).FileSelected += OnFileSelected;
             }
 
-            if (e.SelectedItem != null && e.SelectedItem is HexFile)
+            if (e.SelectedItem != null && e.SelectedItem is HexFile hexFile)
             {
                 ContentViewModel = new HexViewModel(((HexFile)e.SelectedItem).Path);            //  вывод НЕХ файла
+                MessageStatusBar = $"Путь: {hexFile.Path}         Размер: {hexFile.Size}         Дата и время изменения: {hexFile.TimeCreated}";
                 ((HexViewModel)ContentViewModel).Error += OnError;
             }
 
-            if (e.SelectedItem != null && e.SelectedItem is ImageFile)
+            if (e.SelectedItem != null && e.SelectedItem is ImageFile imageFile)
+            {
                 ContentViewModel = new ImageViewModel(((ImageFile)e.SelectedItem).Path);            //  вывод картинки
+                MessageStatusBar = $"Путь: {imageFile.Path}         Размер: {imageFile.Size}         Дата и время изменения: {imageFile.TimeCreated}";
+            }
 
-            if (e.SelectedItem != null && e.SelectedItem is TextFile)
+            if (e.SelectedItem != null && e.SelectedItem is TextFile textFile)
+            {
+                MessageStatusBar = $"Путь: {textFile.Path}         Размер: {textFile.Size}         Дата и время изменения: {textFile.TimeCreated}";
                 ContentViewModel = new TextViewModel(((TextFile)e.SelectedItem).Path);            //  вывод текста
+            }
 
             _listOfFiles = e.Files;
         }

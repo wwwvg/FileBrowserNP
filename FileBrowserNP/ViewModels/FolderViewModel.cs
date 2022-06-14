@@ -160,6 +160,7 @@ namespace FileBrowserNP.ViewModels
                 if(IsLeftPanelView)
                     Files.Add(new Back());
                 Error?.Invoke(this, msg);
+  
 #warning отправить сообщение    
             }
         }

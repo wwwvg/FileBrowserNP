@@ -22,7 +22,8 @@
     <Grid>
         <!--СПИСОК ПАПОК-->
         <local1:ListView x:Name="_listView" Grid.Column="0" ItemsSource="{Binding Files}" HorizontalContentAlignment="Stretch" 
-                            SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedFile}">
+                            SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedFile}"
+                         VirtualizingStackPanel.IsVirtualizing="False">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="200" CellTemplateSelector="{StaticResource FileTemplateSelector}">
