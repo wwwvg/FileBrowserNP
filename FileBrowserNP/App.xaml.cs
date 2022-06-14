@@ -1,7 +1,7 @@
-﻿using ViewModels.Dialogs;
+﻿using FileBrowserNP.ViewModels.Dialogs;
 using FileBrowserNP.ViewModels;
 using System.Windows;
-using Views.Dialogs;
+using FileBrowserNP.Views.Dialogs;
 
 namespace FileBrowserNP
 {
@@ -18,6 +18,7 @@ namespace FileBrowserNP
         private void RegisterDialogs()
         {
             DialogService.RegisterDialog<AddFolderDialog, AddFolderDialogViewModel>();
+            DialogService.RegisterDialog<DeleteDialog, DeleteDialogViewModel>();
         }
     }
 }

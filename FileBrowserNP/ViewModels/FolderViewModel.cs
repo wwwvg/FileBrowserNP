@@ -29,7 +29,7 @@ namespace FileBrowserNP.ViewModels
                 if (Files[index] is Folder)
                     SelectedFile = (Folder)Files[index];
             }
-            else if(isLeftPanelView && Files.Count > 0)
+            else if (isLeftPanelView && Files.Count > 0)
             {
                 if (Files[0] is Back)
                 {
@@ -39,9 +39,6 @@ namespace FileBrowserNP.ViewModels
                 if (Files[0] is Folder)
                     SelectedFile = (Folder)Files[0];
             }
-            else if (isLeftPanelView && (Files.Count > 0 && (Files[0] is Back)))
-                SelectedFile = (Back)Files[0];
-
         }
 
         #region СВОЙСТВА
@@ -92,10 +89,8 @@ namespace FileBrowserNP.ViewModels
 
         public event EventHandler<MessageEventArgs> Error;
 
-  //      public event EventHandler<MessageEventArgs> BackClicked;        // событие перехода на верхний уровень
-
         #endregion
-                                                                                                #warning зачем передаешь индекс?
+                                                                                                
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
@@ -103,7 +98,13 @@ namespace FileBrowserNP.ViewModels
         }
         private void OnDoubleClickedCommand()  // двойной щелчок. главной вьюмодели передается путь к файлу и выбранный индекс
         {
-            FileDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles()));
+            FileDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles())); // индекс передается для записи предыдущих выбранных индексов
+        }
+
+        public void SetSelectedItem(int index)
+        {
+            if(Files.Count > 0)
+                SelectedFile = Files[index];
         }
 
         private List<string> GetFiles()
@@ -151,9 +152,6 @@ namespace FileBrowserNP.ViewModels
                     else
                         Files.Add(new HexFile { Name = name, Path = fullPath, Size = size, TimeCreated = time });
                 }
-                //if(isForwardToSubFolders && Files.Count > 0)
-                //    SelectedFile = Files[0];
-
             }
 
             catch (Exception ex) // некоторые системные папки и файлы недоступны, но если запустить программу с админскими привилегиями то все ОК.

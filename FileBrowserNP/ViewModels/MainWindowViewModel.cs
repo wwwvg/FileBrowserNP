@@ -7,10 +7,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using FileBrowserNP.Models.MyEventArgs;
 using FileBrowserNP.Commands;
-using Views.Dialogs;
-using ViewModels.Dialogs;
+using FileBrowserNP.Views.Dialogs;
+using FileBrowserNP.ViewModels.Dialogs;
 using Microsoft.VisualBasic.FileIO;
 using System.Linq;
+using FileBrowserNP.ViewModels.Dialogs;
+using System.Diagnostics;
 
 namespace FileBrowserNP.ViewModels
 {
@@ -122,11 +124,11 @@ namespace FileBrowserNP.ViewModels
                 try
                 {
                     FileSystem.CreateDirectory(newFolderName);
-                    CreateNewFolderView(_currentDirectory, true, false, true);
+                    ExecuteRefresh();
                 }
                 catch(Exception ex)
                 {
-                    
+                    MessageStatusBar = ex.Message;
                 }
             }
         }
@@ -134,7 +136,7 @@ namespace FileBrowserNP.ViewModels
 
         #region УДАЛИТЬ
         private DelegateCommand _deleteItem;
-        public DelegateCommand DeleteItem => _deleteItem ?? (_deleteItem = new DelegateCommand( ExecuteDeleteItem, CanExecuteDeleteItem));
+        public DelegateCommand DeleteItem => _deleteItem ?? (_deleteItem = new DelegateCommand( ExecuteDeleteItem, CanExecuteDeleteItem).ObservesProperty(() => CanDeleteItem));
 
         void ExecuteDeleteItem()
         {
@@ -143,45 +145,53 @@ namespace FileBrowserNP.ViewModels
 
         bool CanExecuteDeleteItem()
         {
-            // если это файловое представление и выбранный элемент не является Back
-            if (_currentViewModel is FolderViewModel && !(((FolderViewModel)_currentViewModel).SelectedFile is Back))         
-                return true;
-
-            return false;
+            return CanDeleteItem;
         }
 
         private void ShowDeleteDialog()
         {
-            //_dialogService.ShowDeleteDialog(_fileInfoModel?.FullPath, r =>
-            //{
-            //    if (r.Result == ButtonResult.Yes)
-            //    {
-            //        try
-            //        {
-            //            bool moveToRecycleBin = r.Parameters.GetValue<bool>("MoveToRecycleBin");
-            //            if (moveToRecycleBin) // переместить в корзину или удалить навсегда
-            //            {
-            //                if (_fileInfoModel.Type == Helpers.FileType.Folder)
-            //                    FileSystem.DeleteDirectory(_fileInfoModel.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-            //                if (_fileInfoModel.Type == Helpers.FileType.Text || _fileInfoModel.Type == Helpers.FileType.Bin || _fileInfoModel.Type == Helpers.FileType.Image)
-            //                    FileSystem.DeleteFile(_fileInfoModel.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-            //            }
-            //            else
-            //            {
-            //                if (_fileInfoModel.Type == Helpers.FileType.Folder)
-            //                    Directory.Delete(_fileInfoModel.FullPath, true);
-            //                if (_fileInfoModel.Type == Helpers.FileType.Text || _fileInfoModel.Type == Helpers.FileType.Bin || _fileInfoModel.Type == Helpers.FileType.Image)
-            //                    File.Delete(_fileInfoModel.FullPath);
-            //            }
-            //            _eventAggregator.GetEvent<RefreshRequested>().Publish();   //==========> сообщение FileViewModel на обновление списка файлов
+            bool deleteFile = false;
+            string fileName = GetSelectedFullFileName();
+            bool isFolder = ((FolderViewModel)_currentViewModel).SelectedFile is Folder;
+            var vmDeleteFile = new DeleteDialogViewModel(fileName);
+            _dialogService.ShowDialog<DeleteDialogViewModel>(vmDeleteFile, result =>
+            {
+                deleteFile = (bool)result;
+            });
 
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            _eventAggregator.GetEvent<Error>().Publish(ex.Message); //==========> сообщение ErrorViewModel если не удается удалить
-            //        }
-            //    }
-            //});
+            if (deleteFile)
+            {
+                try
+                {
+                    bool moveToRecycleBin = vmDeleteFile.MoveToRecycleBin;
+                    if (moveToRecycleBin) // переместить в корзину или удалить навсегда
+                    {
+                        if (isFolder)
+                            FileSystem.DeleteDirectory(fileName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                        else
+                            FileSystem.DeleteFile(fileName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                    }
+                    else
+                    {
+                        if (isFolder)
+                            Directory.Delete(fileName, true);
+                        else
+                            File.Delete(fileName);
+                    }
+                    ExecuteRefresh();
+                }
+                catch (Exception ex)
+                {
+                    MessageStatusBar = ex.Message;
+                }
+            }
+        }
+
+        private string GetSelectedFullFileName()
+        {
+            string fileName = ((FolderViewModel)_currentViewModel).SelectedFile.Name.Replace("[", "").Replace("]", "");
+            fileName = Path.Combine(_currentDirectory, fileName);
+            return fileName;
         }
         #endregion
 
@@ -191,7 +201,8 @@ namespace FileBrowserNP.ViewModels
 
         void ExecuteRefresh()
         {
-            
+            if(_currentViewModel is FolderViewModel)
+                CreateNewFolderView(_currentDirectory, true, false, true);
         }
         #endregion
         #endregion
@@ -270,7 +281,10 @@ namespace FileBrowserNP.ViewModels
                 }
 
                 if (type == typeof(TextFile))
+                {
+                    Process.Start("Notepad.exe", GetSelectedFullFileName());
                     return;
+                }
 
                 if (type == typeof(ImageFile))
                     return;
@@ -291,7 +305,7 @@ namespace FileBrowserNP.ViewModels
 
         private void CreateNewFolderView(string path, bool isLeftPanelView, bool isBack, bool isRefreshRequested = false)
         {
-                                                                       #warning не очищается статусбар
+#warning не очищается статусбар
             if (isBack)
             {
                 CurrentViewModel = new FolderViewModel(path, isLeftPanelView, _previousSelectedIndexes.Pop(), true);   // текущая вью-модель переключается на папки
@@ -314,8 +328,10 @@ namespace FileBrowserNP.ViewModels
             if (e.SelectedItem is Back)
             {
                 ContentViewModel = new BackViewModel();            //  отображение пустой правой панели
-                MessageStatusBar = $"Назад к {_currentDirectory}";
+                CanDeleteItem = false;
             }
+            else
+                CanDeleteItem = true;
 
             if (e.SelectedItem != null && e.SelectedItem is Folder folder)
             {
@@ -323,6 +339,7 @@ namespace FileBrowserNP.ViewModels
                 _currentDirectory = Directory.GetParent(folder.Path).FullName;
                 MessageStatusBar = $"Путь: {folder.Path}         Размер: {folder.Size}         Дата и время изменения: {folder.TimeCreated}";
                 ContentViewModel = new FolderViewModel(folder.Path, false, 0, false);
+               // ((FolderViewModel)ContentViewModel).FileSelected += OnFileSelected;
             }
 
             if (e.SelectedItem != null && e.SelectedItem is HexFile)
@@ -338,11 +355,6 @@ namespace FileBrowserNP.ViewModels
                 ContentViewModel = new TextViewModel(((TextFile)e.SelectedItem).Path);            //  вывод текста
 
             _listOfFiles = e.Files;
-            //if (e.SelectedItem != null && e.SelectedItem is Back)
-            //{
-            //    ContentViewModel = new BackViewModel();            //  отображение пустой правой панели
-            //    ((BackViewModel)ContentViewModel).FileSelected += OnFileSelected;
-            //}
         }
 
         #endregion

@@ -6,7 +6,7 @@ using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Views.Dialogs
+namespace FileBrowserNP.Views.Dialogs
 {
     public class AddFolderDialogViewModel : BindableBase
     {
@@ -150,10 +150,10 @@ namespace Views.Dialogs
 
         private void SetWarningIcon(bool isError)
         {
-            //if (isError)
-            //    WarningIcon = new BitmapImage(new Uri("Icons/Warning.png", UriKind.Relative));
-            //else
-            //    WarningIcon = null;
+            if (isError)
+                WarningIcon = new BitmapImage(new Uri("/FileBrowserNP;component/Icons/Warning.png", UriKind.Relative));
+            else
+                WarningIcon = new BitmapImage();
         }
 
         private void CloseDialogAndCreateFolder()

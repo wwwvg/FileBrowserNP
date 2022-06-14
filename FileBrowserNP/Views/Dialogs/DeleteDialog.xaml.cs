@@ -1,14 +1,17 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
 namespace FileBrowserNP.Views.Dialogs
 {
-    public partial class AddFolderDialog : Window
+    /// <summary>
+    /// Interaction logic for DeleteDialog.xaml
+    /// </summary>
+    public partial class DeleteDialog : Window
     {
-        public AddFolderDialog()
+        public DeleteDialog()
         {
             InitializeComponent();
         }
+
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;

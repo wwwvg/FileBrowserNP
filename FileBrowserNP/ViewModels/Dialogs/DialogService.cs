@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace ViewModels.Dialogs
+namespace FileBrowserNP.ViewModels.Dialogs
 {
     public interface IDialogService
     {
