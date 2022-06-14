@@ -3,6 +3,8 @@ using FileBrowserNP.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Views.Dialogs
 {
@@ -11,9 +13,25 @@ namespace Views.Dialogs
         public AddFolderDialogViewModel(List<string> fileNames)
         {
             _listOfFiles = fileNames;
+            SetWarningIcon(false);
         }
 
         #region СВОЙСТВА
+
+        
+        private ImageSource _headerImage;
+        public ImageSource HeaderImage
+        {
+            get { return _headerImage; }
+            set { SetProperty(ref _headerImage, value); }
+        }
+
+        private ImageSource _warningIcon = new BitmapImage(new Uri("Icons/Browser.png", UriKind.Relative));
+        public ImageSource WarningIcon
+        {
+            get { return _warningIcon; }
+            set { SetProperty(ref _warningIcon, value); }
+        }
 
         private List<string> _listOfFiles = new();
         public List<string> ListOfFiles
@@ -107,24 +125,35 @@ namespace Views.Dialogs
             string[] prohibitedChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
             foreach (var symbol in prohibitedChars)
             if (NewFolderName.Contains(symbol))
-            {
-                ErrorMessage = "Символы \\ / : * ? \" < > | запрещены";
-                CanAddFolder = false;
-                return;
-            }
+                {
+                    ErrorMessage = "Символы \\ / : * ? \" < > | не разрешены!";
+                    SetWarningIcon(true);
+                    CanAddFolder = false;
+                    return;
+                }
 
 
 
             if (_listOfFiles.Contains(Path.GetFileName(NewFolderName)))
             {
                 ErrorMessage = "Такая папка уже существует!";
+                SetWarningIcon(true);
                 CanAddFolder = false;
                 return;
             }
 
             CanAddFolder = true;
             ErrorMessage = "";
+            SetWarningIcon(false);
             return;
+        }
+
+        private void SetWarningIcon(bool isError)
+        {
+            //if (isError)
+            //    WarningIcon = new BitmapImage(new Uri("Icons/Warning.png", UriKind.Relative));
+            //else
+            //    WarningIcon = null;
         }
 
         private void CloseDialogAndCreateFolder()

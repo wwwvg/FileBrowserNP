@@ -7,8 +7,10 @@
         xmlns:view="clr-namespace:FileBrowserNP.Views"
         xmlns:vm="clr-namespace:FileBrowserNP.ViewModels"
         mc:Ignorable="d"
-        Title="{Binding Title}" Icon="./Icons/Browser.png" Height="800" Width="1200" WindowStartupLocation="CenterScreen">
+        Title="{Binding Title}"  Height="800" Width="1200" WindowStartupLocation="CenterScreen">
 
+    <!--Icon="./Icons/Browser.png"-->
+    
         <Window.Resources>
             <DataTemplate DataType="{x:Type vm:DriveViewModel}">
                 <view:DriveView />

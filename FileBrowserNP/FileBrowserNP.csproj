@@ -29,25 +29,52 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Icons\AddFolder.png" />
-    <Resource Include="Icons\Back.png" />
-    <Resource Include="Icons\Bin.png" />
-    <Resource Include="Icons\Browser.png" />
-    <Resource Include="Icons\Cfg.png" />
-    <Resource Include="Icons\Delete.ico" />
-    <Resource Include="Icons\DeleteItem.png" />
-    <Resource Include="Icons\Folder.png" />
-    <Resource Include="Icons\HardDrive.png" />
-    <Resource Include="Icons\Image.png" />
-    <Resource Include="Icons\Refresh.png" />
-    <Resource Include="Icons\Text.png" />
-    <Resource Include="Icons\Warning.png" />
-    <Resource Include="Icons\Warning2.png" />
+    <Resource Include="Icons\AddFolder.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Back.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Bin.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Browser.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Cfg.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Delete.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\DeleteItem.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Folder.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\HardDrive.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Image.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Refresh.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Text.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Warning.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Warning2.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ViewModels\Dialogs\" />
-    <Folder Include="Views\Dialogs\" />
   </ItemGroup>
 
 </Project>
