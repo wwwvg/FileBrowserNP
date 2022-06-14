@@ -96,7 +96,7 @@ namespace FileBrowserNP.ViewModels
         public event EventHandler<SelectedItemEventArgs> FileSelected;             // событие выбранного элемента
 
         #endregion
-                                                                                                
+
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {

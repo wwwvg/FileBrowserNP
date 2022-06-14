@@ -1,8 +1,7 @@
 ﻿namespace FileBrowserNP.Models
 {
-    public class HexFile : Base
+    public class HexFile : FileBase
     {
-        public string Path { get; set; }
         public string Size { get; set; }
         public string TimeCreated { get; set; }
     }

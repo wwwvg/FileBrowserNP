@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Input;
 using FileBrowserNP.Helpers;
 using FileBrowserNP.Models.MyEventArgs;
+using System.Collections.Generic;
 
 namespace FileBrowserNP.ViewModels
 {
@@ -57,7 +58,8 @@ namespace FileBrowserNP.ViewModels
         public event EventHandler<SelectedDriveEventArgs> ItemSelected;             // событие выбранного элемента
 
         #endregion
-                                                                                        #warning зачем передаешь индекс?
+
+
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
@@ -87,7 +89,6 @@ namespace FileBrowserNP.ViewModels
                         TotalSpace = Bytes.SizeSuffix(drive.TotalSize)
                     });
                 }
-                
             }
             catch (Exception ex) // не все диски м.б. доступны (например - сетевой)
             {

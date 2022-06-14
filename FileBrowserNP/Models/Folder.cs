@@ -2,9 +2,8 @@
 
 namespace FileBrowserNP.Models
 {
-    public class Folder : Base
+    public class Folder : FileBase
     {
-        public string Path { get; set; }
         public string Size { get; set; }
         public string TimeCreated { get; set; }
     }

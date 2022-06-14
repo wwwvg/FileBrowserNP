@@ -14,11 +14,13 @@ namespace FileBrowserNP.Views.Dialogs
         {
             _listOfFiles = fileNames;
             SetWarningIcon(false);
+          //  _currentViewModel = currentViewModel;
         }
 
         #region СВОЙСТВА
 
-        
+       // private IEnumerable<BindableBase> _currentViewModel;
+
         private ImageSource _headerImage;
         public ImageSource HeaderImage
         {
@@ -134,13 +136,13 @@ namespace FileBrowserNP.Views.Dialogs
 
 
 
-            if (_listOfFiles.Contains(Path.GetFileName(NewFolderName)))
-            {
-                ErrorMessage = "Такая папка уже существует!";
-                SetWarningIcon(true);
-                CanAddFolder = false;
-                return;
-            }
+            //if (()_currentViewModel.Contains(Path.GetFileName(NewFolderName)))
+            //{
+            //    ErrorMessage = "Такая папка уже существует!";
+            //    SetWarningIcon(true);
+            //    CanAddFolder = false;
+            //    return;
+            //}
 
             CanAddFolder = true;
             ErrorMessage = "";
