@@ -40,9 +40,9 @@
             <Button Command="{Binding DeleteItem}" Width="25" Height="25" Margin="10, 0, 0, 0" ToolTip="Удалить выбранный элемент">
                 <Image Source="{Binding DeleteItemImage}"/>
             </Button>
-            <Button Command="{Binding Refresh}" Width="25" Height="25" Margin="10, 0, 0, 0" ToolTip="Обновить">
+            <!--<Button Command="{Binding Refresh}" Width="25" Height="25" Margin="10, 0, 0, 0" ToolTip="Обновить">
                 <Image Source="{Binding RefreshImage}"/>
-            </Button>
+            </Button>-->
         </ToolBar>
         
         <StatusBar DockPanel.Dock="Bottom">

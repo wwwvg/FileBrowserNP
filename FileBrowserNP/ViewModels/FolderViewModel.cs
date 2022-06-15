@@ -106,24 +106,17 @@ namespace FileBrowserNP.ViewModels
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
-            ItemSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles()));
+            ItemSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex));
         }
         private void OnDoubleClickedCommand()  // двойной щелчок. главной вьюмодели передается путь к файлу и выбранный индекс
         {
-            ItemDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles())); // индекс передается для записи предыдущих выбранных индексов
+            ItemDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex)); // индекс передается для записи предыдущих выбранных индексов
         }
 
         public void SetSelectedItem(int index)
         {
             if(Files.Count > 0)
                 SelectedFile = Files[index];
-        }
-
-        private List<string> GetFiles()
-        {
-            var listOfFiles = from file in Files select file.Name.Replace("[", "").Replace("]", "");
-            List<string> fileNames = listOfFiles.ToList();
-            return fileNames;
         }
 
         private void SetFoldersAndFiles(string path, bool isForwardToSubFolders) // добавление папок и файлов
@@ -135,7 +128,7 @@ namespace FileBrowserNP.ViewModels
                 DirectoryInfo[] directories = dir.GetDirectories();
 
                 if(_isLeftPanelView)
-                    Files.Add(new Back());
+                    Files.Add(new Back{ Path = path });
 
                 foreach (var item in directories)
                 {

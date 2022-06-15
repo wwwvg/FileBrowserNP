@@ -4,7 +4,8 @@
     {
         public DeleteDialogViewModel(string fullPath)
         {
-            Message = $"Вы уверены, что хотите удалить выбранный элемент {fullPath}?";
+            Message = $"Вы уверены, что хотите удалить выбранный элемент:?";
+            FileName = $"{fullPath}";
         }
 
         #region СВОЙСТВА
@@ -20,6 +21,9 @@
 
         private string _message;
         public string Message { get => _message; set => SetProperty(ref _message, value); }
+
+        private string _fileName;
+        public string FileName { get => _fileName; set => SetProperty(ref _fileName, value); }
         #endregion
 
         #region КОМАНДЫ И ОБРАБОТЧИКИ

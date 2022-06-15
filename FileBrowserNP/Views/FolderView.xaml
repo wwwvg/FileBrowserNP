@@ -50,6 +50,7 @@
         </local1:ListView>
         <Grid.InputBindings>
             <KeyBinding Gesture="Enter" Command="{Binding DoubleClickedCommand}"/>
+            <!--<KeyBinding Gesture="Del" Command="{Binding DeleteClickedCommand}"/>-->
         </Grid.InputBindings>
     </Grid>
 </UserControl>

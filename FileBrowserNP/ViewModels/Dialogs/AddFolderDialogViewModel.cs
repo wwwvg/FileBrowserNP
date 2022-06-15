@@ -134,7 +134,7 @@ namespace FileBrowserNP.Views.Dialogs
 
 
 
-            if (_listOfFiles.Contains(Path.GetFileName(NewFolderName)))
+            if (_listOfFiles.Contains(Path.GetFileName(NewFolderName).ToUpper()))
             {
                 ErrorMessage = "Такая папка уже существует!";
                 SetWarningIcon(true);
