@@ -19,26 +19,32 @@ namespace FileBrowserNP.ViewModels
         public FolderViewModel(string path, bool isLeftPanelView, int selectedIndex, bool isBack)
         {
             _isLeftPanelView = isLeftPanelView;
-            SetFoldersAndFiles(path, !isBack);
-            if (isLeftPanelView && isBack && Files.Count > 0)
-            {
-                int index = (selectedIndex > -1 && selectedIndex < Files.Count) ? selectedIndex : 0;
-                if (Files[index] is Back)
-                    SelectedFile = (Back)Files[index];
+            SetFoldersAndFiles(path, !isBack); // путь для создания подпапок и флаг: нужно ли создавать кнопку назад
 
-                if (Files[index] is Folder)
-                    SelectedFile = (Folder)Files[index];
-            }
-            else if (isLeftPanelView && Files.Count > 0)
-            {
-                if (Files[0] is Back)
-                {
-                    SelectedFile = (Back)Files[0];
-                }
+            int index = (selectedIndex > -1 && selectedIndex < Files.Count) ? selectedIndex : 0;
+            if (isLeftPanelView && Files.Count > 0)
+                SelectedFile = Files[selectedIndex];
 
-                if (Files[0] is Folder)
-                    SelectedFile = (Folder)Files[0];
-            }
+            //SetFoldersAndFiles(path, !isBack);
+            //if (isLeftPanelView && isBack && Files.Count > 0)
+            //{
+            //    
+            //    if (Files[index] is Back)
+            //        SelectedFile = (Back)Files[index];
+
+            //    if (Files[index] is Folder)
+            //        SelectedFile = (Folder)Files[index];
+            //}
+            //else if (isLeftPanelView && Files.Count > 0)
+            //{
+            //    if (Files[0] is Back)
+            //    {
+            //        SelectedFile = (Back)Files[0];
+            //    }
+
+            //    if (Files[0] is Folder)
+            //        SelectedFile = (Folder)Files[0];
+            //}
         }
 
         #region СВОЙСТВА
@@ -91,20 +97,20 @@ namespace FileBrowserNP.ViewModels
         #endregion
 
         #region СОБЫТИЯ
-        public event EventHandler<SelectedItemEventArgs> FileDoubleClicked;     // событие двойного клика
+        public event EventHandler<SelectedItemEventArgs> ItemDoubleClicked;     // событие двойного клика
 
-        public event EventHandler<SelectedItemEventArgs> FileSelected;             // событие выбранного элемента
+        public event EventHandler<SelectedItemEventArgs> ItemSelected;             // событие выбранного элемента
 
         #endregion
                                                                                                 
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
-            FileSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles()));
+            ItemSelected?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles()));
         }
         private void OnDoubleClickedCommand()  // двойной щелчок. главной вьюмодели передается путь к файлу и выбранный индекс
         {
-            FileDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles())); // индекс передается для записи предыдущих выбранных индексов
+            ItemDoubleClicked?.Invoke(this, new SelectedItemEventArgs(SelectedFile, SelectedIndex, GetFiles())); // индекс передается для записи предыдущих выбранных индексов
         }
 
         public void SetSelectedItem(int index)
@@ -165,8 +171,6 @@ namespace FileBrowserNP.ViewModels
                 if(IsLeftPanelView)
                     Files.Add(new Back());
                 throw(ex);
-  
-#warning отправить сообщение    
             }
         }
         #endregion

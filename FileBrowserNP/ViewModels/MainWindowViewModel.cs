@@ -20,7 +20,7 @@ namespace FileBrowserNP.ViewModels
     {
         public MainWindowViewModel()
         {
-            LoadDriveView(false, true);    // при запуске программы отображаем список дисков
+            LoadDriveView();    // при запуске программы отображаем список дисков
             DeleteItemImage = new BitmapImage(new Uri("..\\Icons\\DeleteItem.png", UriKind.Relative));
             AddFolderImage = new BitmapImage(new Uri("..\\Icons\\AddFolder.png", UriKind.Relative));
             RefreshImage = new BitmapImage(new Uri("..\\Icons\\Refresh.png", UriKind.Relative));
@@ -43,12 +43,12 @@ namespace FileBrowserNP.ViewModels
         private int _selectedIndex = 0;
         public int SelectedIndex { get => _selectedIndex;  set => SetProperty(ref _selectedIndex, value); }
 
-        private BindableBase _currentViewModel;
-        public BindableBase CurrentViewModel { get => _currentViewModel; set => SetProperty(ref _currentViewModel, value); }
+        private BindableBase _LeftViewModel;
+        public BindableBase LeftViewModel { get => _LeftViewModel; set => SetProperty(ref _LeftViewModel, value); }
 
         
-        private BindableBase _contentViewModel;
-        public BindableBase ContentViewModel { get => _contentViewModel; set => SetProperty(ref _contentViewModel, value); }
+        private BindableBase _RightViewModel;
+        public BindableBase RightViewModel { get => _RightViewModel; set => SetProperty(ref _RightViewModel, value); }
 
        
         private ObservableCollection<Base> _files = new(); // список дисков, файлов и каталогов
@@ -142,7 +142,7 @@ namespace FileBrowserNP.ViewModels
         {
             bool deleteFile = false;
             string fileName = GetSelectedFullFileName();
-            bool isFolder = ((FolderViewModel)_currentViewModel).SelectedFile is Folder;
+            bool isFolder = ((FolderViewModel)_LeftViewModel).SelectedFile is Folder;
             var vmDeleteFile = new DeleteDialogViewModel(fileName);
             _dialogService.ShowDialog<DeleteDialogViewModel>(vmDeleteFile, result =>
             {
@@ -180,7 +180,7 @@ namespace FileBrowserNP.ViewModels
         private string GetSelectedFullFileName()
         {
 
-            string fileName = ((FolderViewModel)_currentViewModel).SelectedFile.Name.Replace("[", "").Replace("]", "");
+            string fileName = ((FolderViewModel)_LeftViewModel).SelectedFile.Name.Replace("[", "").Replace("]", "");
             fileName = Path.Combine(_currentDirectory, fileName);
             return fileName;
         }
@@ -192,34 +192,29 @@ namespace FileBrowserNP.ViewModels
 
         void ExecuteRefresh()
         {
-            if(_currentViewModel is FolderViewModel)
-                CreateNewFolderView(_currentDirectory, true, false, true);
+            if(_LeftViewModel is FolderViewModel)
+                LoadLeftFolderView(_currentDirectory, false, true);
         }
         #endregion
         #endregion
 
         #region ОБРАБОТЧИКИ И МЕТОДЫ ДИСКОВ
-        private void LoadDriveView(bool isBack, bool isFirstTime = false)   // текущая вью-модель переключается на диски
+        private void LoadDriveView()   // текущая вью-модель переключается на диски
         {
             CanAddFolder = false;
             CanDeleteItem = false;
-            if (isBack)
-                CurrentViewModel = new DriveViewModel(_previousSelectedIndexes.Pop());
-            else // если вперед
+
+            if(_previousSelectedIndexes.Count == 0)
+                LeftViewModel = new DriveViewModel(0);
+            else
             {
-                if(!isFirstTime)
-                    _previousSelectedIndexes.Push(SelectedIndex);
-                CurrentViewModel = new DriveViewModel(0);
-            }
+                LeftViewModel = new DriveViewModel(_previousSelectedIndexes.Pop());
+            }           
 
-            ((DriveViewModel)CurrentViewModel).DriveDoubleClicked += OnDriveDoubleClicked;   // подключен обработчик двойного клика по диску
-            ((DriveViewModel)CurrentViewModel).ItemSelected += OnDriveSelected;    // подключен обработчик выбора диска
-
-            var drive = ((DriveViewModel)CurrentViewModel);
-            ContentViewModel = new FolderViewModel(drive.SelectedDrive.Name, false, 0, false);
-            MessageStatusBar = $"[{drive.SelectedDrive.Label}]  свободно {drive.SelectedDrive.FreeSpace} из {drive.SelectedDrive.TotalSpace}";
-        }
-
+            ((DriveViewModel)LeftViewModel).DriveDoubleClicked += OnDriveDoubleClicked;   // подключен обработчик двойного клика по диску
+            ((DriveViewModel)LeftViewModel).DriveSelected += OnDriveSelected;    // подключен обработчик выбора диска
+            LoadRightFolderView(((DriveViewModel)LeftViewModel).SelectedDrive.Name);
+        }     
         private void OnDriveSelected(object sender, SelectedDriveEventArgs e)   // выбрали диск
         {
             if (e.SelectedItem != null && e.SelectedItem is Drive)
@@ -233,126 +228,116 @@ namespace FileBrowserNP.ViewModels
                         _isError = false;
                 _currentDirectory = drive.Name;
 
-                ContentViewModel = new FolderViewModel(_currentDirectory, false, 0, false);  // дочерние папки
-                //((FolderViewModel)ContentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора диска во втором окне
+                LoadRightFolderView(drive.Name);
             }
         }
         public void OnDriveDoubleClicked(object sender, SelectedDriveEventArgs e)  // по диску щелкнули два раза -> создаем вместо дисков каталоги, справа дочерние каталоги
         {
             if (e.SelectedItem != null && e.SelectedItem is Drive drive)
             {
-                CreateNewFolderView(drive.Name, true, false);
+                LoadLeftFolderView(drive.Name, false, false);
                 CanAddFolder = true;
                 _previousSelectedIndexes.Push(SelectedIndex);
                 MessageStatusBar = "";
             }
+            RightViewModel = new BackViewModel();
         }
         #endregion
 
         #region ОБРАБОТЧИКИ И МЕТОДЫ ПАПОК/ФАЙЛОВ
-        public void OnFileDoubleClicked(object sender, SelectedItemEventArgs e)  // по папке/файлу щелкнули два раза или назад
+
+        //*******************************    ФАЙЛЫ СЛЕВА     ***********************************************************************************                           
+        private void LoadLeftFolderView(string path, bool isBack, bool isRefreshRequested = false)    
         {
-            if (e.SelectedItem != null)
+            try
             {
-                Base myType = (Base)e.SelectedItem;
-
-                Type type = myType.GetType();
-
-                if (type == typeof(Folder))
+                if (isBack)
                 {
-                    CreateNewFolderView(((Folder)e.SelectedItem).Path, true, false);
-                    SelectedIndex = e.SelectedIndex;
-                    _previousSelectedIndexes.Push(_selectedIndex);
-                    return;
-                }
-
-                if (type == typeof(Back))
-                {
-                    if (Directory.GetParent(_currentDirectory) != null)
-                    {
-                        string currentDirectoryRoot = Directory.GetParent(_currentDirectory).FullName;
-                        CreateNewFolderView(currentDirectoryRoot, true, true);
-                        return;
-                    }
+                    int previuosIndex = _previousSelectedIndexes.Pop();    // взял из стека предыдущий индекс
+                    LeftViewModel = new FolderViewModel(path, true, previuosIndex, true);   // текущая вью-модель переключается на папки
+                    _currentDirectory = path;// Directory.GetParent(path)?.FullName ?? path;
+                    if (previuosIndex == 0)
+                        CanDeleteItem = false;
                     else
-                    {
-                        LoadDriveView(true);
-                    }
+                        CanDeleteItem = true;
                 }
-
-                if (type == typeof(HexFile))
+                else
                 {
-                    
-                    return;
+                    LeftViewModel = new FolderViewModel(path, true, 0, false);
+                    _currentDirectory = path;
+                    CanDeleteItem = false;
                 }
+            ((FolderViewModel)LeftViewModel).ItemDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
+                ((FolderViewModel)LeftViewModel).ItemSelected += OnLeftFileSelected;    // подключен обработчик выбора папок/файлов
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+        }
 
-                if (type == typeof(TextFile))
+        //*******************************    ФАЙЛЫ СПРАВА     ***********************************************************************************
+        private void LoadRightFolderView(string path)                                                   
+        {
+            var drive = LeftViewModel as DriveViewModel;
+            RightViewModel = new FolderViewModel(path, false, 0, false);
+            ((FolderViewModel)RightViewModel).ItemSelected += OnRightFileSelected;    // подключен обработчик выбора файлов справа
+        }
+
+        //*******************************    ДВОЙНОЙ ЩЕЛЧОК ПО ФАЙЛУ     ***********************************************************************************
+        public void OnFileDoubleClicked(object sender, SelectedItemEventArgs e)                     
+        {
+            try
+            {
+                if (e.SelectedItem != null)
                 {
-                    try
+                    Base myType = (Base)e.SelectedItem;
+
+                    Type type = myType.GetType();
+
+                    if (type == typeof(Folder))
                     {
-                        Process.Start("Notepad.exe", GetSelectedFullFileName());
+                        LoadLeftFolderView(((Folder)e.SelectedItem).Path, false);
+                        SelectedIndex = e.SelectedIndex;
+                        _previousSelectedIndexes.Push(_selectedIndex);
                         return;
                     }
-                    catch(Exception ex)
-                    {
-                        MessageStatusBar = ex.Message;
-                        return;
-                    }
-                }
 
-                if (type == typeof(ImageFile))
-                {
-                    try
+                    if (type == typeof(Back))
                     {
-                        string Location_ToOpen = GetSelectedFullFileName();
-                        if (!File.Exists(Location_ToOpen))
+
+                        if (Directory.GetParent(_currentDirectory) != null)
                         {
+                            ShowErrorMessage(_currentDirectory);
+                            string currentDirectoryRoot = Directory.GetParent(_currentDirectory).FullName;
+                            LoadLeftFolderView(currentDirectoryRoot, true, false);
                             return;
                         }
-
-                        string argument = "/open, \"" + Location_ToOpen + "\"";
-
-                        System.Diagnostics.Process.Start("explorer.exe", argument);
-                        return;
+                        else
+                        {
+                            LoadDriveView();
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageStatusBar = ex.Message;
-                    }
+
+                    if (type == typeof(HexFile) || type == typeof(TextFile) || type == typeof(ImageFile))
+                        OpenFile();
                 }
             }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
         }
 
-        private void CreateNewFolderView(string path, bool isLeftPanelView, bool isBack, bool isRefreshRequested = false)
-        {
-            if (isBack)
-            {
-                int previuosIndex = _previousSelectedIndexes.Pop();
-                CurrentViewModel = new FolderViewModel(path, isLeftPanelView, previuosIndex, true);   // текущая вью-модель переключается на папки
-                _currentDirectory = Directory.GetParent(path)?.FullName ?? path;
-                if (previuosIndex == 0)
-                    CanDeleteItem = false;
-                else
-                    CanDeleteItem = true;
-            }
-            else
-            {
-                CurrentViewModel = new FolderViewModel(path, isLeftPanelView, 0, false);
-                if (isLeftPanelView && !isRefreshRequested)
-                    _previousSelectedIndexes.Push(SelectedIndex);
-                _currentDirectory = path;
-                CanDeleteItem = false;
-            }
-            ((FolderViewModel)CurrentViewModel).FileDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
-            ((FolderViewModel)CurrentViewModel).FileSelected += OnFileSelected;    // подключен обработчик выбора папок/файлов
-        }
+        //*******************************    ВЫБОР ЛЕВОГО ФАЙЛА     ************************************************************
 
-        public void OnFileSelected(object sender, SelectedItemEventArgs e)  // выбрали папку/файл
+        public void OnLeftFileSelected(object sender, SelectedItemEventArgs e)  // выбрали папку/файл
         {
             if (e.SelectedItem is Back)
             {
-                ContentViewModel = new BackViewModel();            //  отображение пустой правой панели
+                RightViewModel = new BackViewModel();            //  отображение пустой правой панели
                 CanDeleteItem = false;
+                return;
             }
             else
                 CanDeleteItem = true;
@@ -361,28 +346,27 @@ namespace FileBrowserNP.ViewModels
             {
                 if (e.SelectedItem != null && e.SelectedItem is Folder folder)
                 {
-                    folder = ((Folder)e.SelectedItem);
-                    _currentDirectory = Directory.GetParent(folder.Path).FullName;
+                    folder = ((Folder)e.SelectedItem);                                              // показ файлов справа
+                    _currentDirectory = folder.Path;//Directory.GetParent(folder.Path).FullName;
                     ShowFileInfoMessage(folder.Path, folder.Size, folder.TimeCreated);
-                    ContentViewModel = new FolderViewModel(folder.Path, false, 0, false);
-                    // ((FolderViewModel)ContentViewModel).FileSelected += OnFileSelected;
+                    LoadRightFolderView(folder.Path);                                               
                 }
 
                 if (e.SelectedItem != null && e.SelectedItem is HexFile hexFile)
                 {
-                    ContentViewModel = new HexViewModel(((HexFile)e.SelectedItem).Path);            //  вывод НЕХ файла
+                    RightViewModel = new HexViewModel(((HexFile)e.SelectedItem).Path);            //  вывод НЕХ файла
                     ShowFileInfoMessage(hexFile.Path, hexFile.Size, hexFile.TimeCreated);
                 }
 
                 if (e.SelectedItem != null && e.SelectedItem is ImageFile imageFile)
                 {
-                    ContentViewModel = new ImageViewModel(((ImageFile)e.SelectedItem).Path);            //  вывод картинки
+                    RightViewModel = new ImageViewModel(((ImageFile)e.SelectedItem).Path);            //  вывод картинки
                     ShowFileInfoMessage(imageFile.Path, imageFile.Size, imageFile.TimeCreated);
                 }
 
                 if (e.SelectedItem != null && e.SelectedItem is TextFile textFile)
                 {
-                    ContentViewModel = new TextViewModel(((TextFile)e.SelectedItem).Path);            //  вывод текста
+                    RightViewModel = new TextViewModel(((TextFile)e.SelectedItem).Path);            //  вывод текста
                     ShowFileInfoMessage(textFile.Path, textFile.Size, textFile.TimeCreated);
                 }
             }
@@ -390,9 +374,66 @@ namespace FileBrowserNP.ViewModels
             {
                 ShowErrorMessage(ex.Message);
             }
-            _listOfFiles = e.Files;
+            //_listOfFiles = e.Files;
+        }
+
+        //*******************************    ВЫБОР ПРАВОГО ФАЙЛА     ************************************************************
+        public void OnRightFileSelected(object sender, SelectedItemEventArgs e)  // выбрали папку/файл
+        {
+            if (e.SelectedItem is Back)
+                RightViewModel = new BackViewModel();            //  отображение пустой правой панели
+
+            try
+            {
+                if (e.SelectedItem != null && e.SelectedItem is Folder folder)
+                {
+                    folder = ((Folder)e.SelectedItem);
+                    ShowFileInfoMessage(folder.Path, folder.Size, folder.TimeCreated);
+                }
+
+                if (e.SelectedItem != null && e.SelectedItem is HexFile hexFile)
+                {                
+                    ShowFileInfoMessage(hexFile.Path, hexFile.Size, hexFile.TimeCreated); //  вывод НЕХ файла
+                }
+
+                if (e.SelectedItem != null && e.SelectedItem is ImageFile imageFile)
+                {      
+                    ShowFileInfoMessage(imageFile.Path, imageFile.Size, imageFile.TimeCreated); //  вывод картинки
+                }
+
+                if (e.SelectedItem != null && e.SelectedItem is TextFile textFile)
+                {   
+                    ShowFileInfoMessage(textFile.Path, textFile.Size, textFile.TimeCreated); //  вывод текста
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+            //_listOfFiles = e.Files;
         }
         #endregion
+        //*******************************************************************************************************************************************************
+        private void OpenFile()
+        {
+            try
+            {
+                string Location_ToOpen = GetSelectedFullFileName();
+                if (!File.Exists(Location_ToOpen))
+                {
+                    return;
+                }
+
+                string argument = "/open, \"" + Location_ToOpen + "\"";
+
+                System.Diagnostics.Process.Start("explorer.exe", argument);
+                return;
+            }
+            catch (Exception ex)
+            {
+                MessageStatusBar = ex.Message;
+            }
+        }
 
         public void ShowFileInfoMessage(string path, string size, string timeCreated)  // ошибка открытия/чтения дисков, папок и файлов
         {

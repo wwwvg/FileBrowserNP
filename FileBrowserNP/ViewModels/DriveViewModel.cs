@@ -20,6 +20,8 @@ namespace FileBrowserNP.ViewModels
         {
             SetDrives();
             SelectedDrive = (Drive)Drives[(selectedIndex > -1 && selectedIndex < Drives.Count) ? selectedIndex : 0]; // выделяем диск
+            SelectedIndex = selectedIndex;
+            OnItemSelected();
         }
 
         #region СВОЙСТВА
@@ -54,14 +56,14 @@ namespace FileBrowserNP.ViewModels
         #region СОБЫТИЯ
         public event EventHandler<SelectedDriveEventArgs> DriveDoubleClicked;     // событие двойного клика
 
-        public event EventHandler<SelectedDriveEventArgs> ItemSelected;             // событие выбранного элемента
+        public event EventHandler<SelectedDriveEventArgs> DriveSelected;             // событие выбранного элемента
 
         #endregion
                                                                                         #warning зачем передаешь индекс?
         #region ОБРАБОТЧИКИ И МЕТОДЫ
         private void OnItemSelected()  // выбрали элемент. главной вью-модели передается путь к файлу и выбранный индекс
         {
-            ItemSelected?.Invoke(this, new SelectedDriveEventArgs(SelectedDrive, SelectedIndex));
+            DriveSelected?.Invoke(this, new SelectedDriveEventArgs(SelectedDrive, SelectedIndex));
         }
         private void OnDoubleClickedCommand()  // двойной щелчок. главной вьюмодели передается путь к файлу и выбранный индекс
         {
