@@ -208,7 +208,7 @@ namespace FileBrowserNP.ViewModels
                 LeftViewModel = new DriveViewModel(0);
             else
             {
-                LeftViewModel = new DriveViewModel(_previousSelectedIndexes.Pop());
+                LeftViewModel = new DriveViewModel(_previousSelectedIndexes.Pop());                                                     // <======================== POP
             }           
 
             ((DriveViewModel)LeftViewModel).DriveDoubleClicked += OnDriveDoubleClicked;   // подключен обработчик двойного клика по диску
@@ -222,11 +222,11 @@ namespace FileBrowserNP.ViewModels
                 Drive drive = (Drive)e.SelectedItem;
                 SelectedIndex = (int)e.SelectedIndex;
                 ImageStatusBar = null;
-                if (!_isError)
+        //        if (!_isError)
                     MessageStatusBar = $"[{drive.Label}]  свободно {drive.FreeSpace} из {drive.TotalSpace}";
-                else
-                        _isError = false;
-                _currentDirectory = drive.Name;
+                //else
+                //        _isError = false;
+                _currentDirectory = drive.Name;                            // <========================      _currentDirectory                                                
 
                 LoadRightFolderView(drive.Name);
             }
@@ -237,8 +237,7 @@ namespace FileBrowserNP.ViewModels
             {
                 LoadLeftFolderView(drive.Name, false, false);
                 CanAddFolder = true;
-                _previousSelectedIndexes.Push(SelectedIndex);
-                MessageStatusBar = "";
+                _previousSelectedIndexes.Push(SelectedIndex);                                                                                   // <======================== PUSH
             }
             RightViewModel = new BackViewModel();
         }
@@ -249,13 +248,15 @@ namespace FileBrowserNP.ViewModels
         //*******************************    ФАЙЛЫ СЛЕВА     ***********************************************************************************                           
         private void LoadLeftFolderView(string path, bool isBack, bool isRefreshRequested = false)    
         {
+            //_currentDirectory = path;
+           
             try
             {
                 if (isBack)
                 {
-                    int previuosIndex = _previousSelectedIndexes.Pop();    // взял из стека предыдущий индекс
+                    int previuosIndex = _previousSelectedIndexes.Pop();    // взял из стека предыдущий индекс                                   // <======================== POP   
                     LeftViewModel = new FolderViewModel(path, true, previuosIndex, true);   // текущая вью-модель переключается на папки
-                    _currentDirectory = path;// Directory.GetParent(path)?.FullName ?? path;
+                    _currentDirectory = Directory.GetParent(path)?.FullName ?? path;                            // <========================      _currentDirectory     
                     if (previuosIndex == 0)
                         CanDeleteItem = false;
                     else
@@ -263,11 +264,14 @@ namespace FileBrowserNP.ViewModels
                 }
                 else
                 {
-                    LeftViewModel = new FolderViewModel(path, true, 0, false);
-                    _currentDirectory = path;
+                    if(isRefreshRequested)
+                        LeftViewModel = new FolderViewModel(path, true, 0, true);
+                    else
+                        LeftViewModel = new FolderViewModel(path, true, 0, false);
+                  //  _currentDirectory = path;                            // <========================      _currentDirectory     
                     CanDeleteItem = false;
                 }
-            ((FolderViewModel)LeftViewModel).ItemDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
+                ((FolderViewModel)LeftViewModel).ItemDoubleClicked += OnFileDoubleClicked;   // подключен обработчик двойного клика по диску
                 ((FolderViewModel)LeftViewModel).ItemSelected += OnLeftFileSelected;    // подключен обработчик выбора папок/файлов
             }
             catch (Exception ex)
@@ -299,7 +303,7 @@ namespace FileBrowserNP.ViewModels
                     {
                         LoadLeftFolderView(((Folder)e.SelectedItem).Path, false);
                         SelectedIndex = e.SelectedIndex;
-                        _previousSelectedIndexes.Push(_selectedIndex);
+                        _previousSelectedIndexes.Push(_selectedIndex);                                              // <======================== PUSH
                         return;
                     }
 
@@ -308,9 +312,8 @@ namespace FileBrowserNP.ViewModels
 
                         if (Directory.GetParent(_currentDirectory) != null)
                         {
-                            ShowErrorMessage(_currentDirectory);
                             string currentDirectoryRoot = Directory.GetParent(_currentDirectory).FullName;
-                            LoadLeftFolderView(currentDirectoryRoot, true, false);
+                            LoadLeftFolderView(currentDirectoryRoot, true);
                             return;
                         }
                         else
@@ -347,8 +350,8 @@ namespace FileBrowserNP.ViewModels
                 if (e.SelectedItem != null && e.SelectedItem is Folder folder)
                 {
                     folder = ((Folder)e.SelectedItem);                                              // показ файлов справа
-                    _currentDirectory = folder.Path;//Directory.GetParent(folder.Path).FullName;
-                    ShowFileInfoMessage(folder.Path, folder.Size, folder.TimeCreated);
+                    _currentDirectory = folder.Path;//Directory.GetParent(folder.Path).FullName;                            // <========================      _currentDirectory     
+ //                   ShowFileInfoMessage(folder.Path, folder.Size, folder.TimeCreated);
                     LoadRightFolderView(folder.Path);                                               
                 }
 
@@ -374,6 +377,7 @@ namespace FileBrowserNP.ViewModels
             {
                 ShowErrorMessage(ex.Message);
             }
+      //      ShowErrorMessage(_currentDirectory);
             //_listOfFiles = e.Files;
         }
 
