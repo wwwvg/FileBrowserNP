@@ -57,10 +57,10 @@
             </Grid.ColumnDefinitions>
 
             <!--В зависимости от типа в левой панели отображается DriveView или FolderView-->
-            <ContentControl Grid.Column="0" Content="{Binding Path=CurrentViewModel}"/>
+            <ContentControl Grid.Column="0" Content="{Binding Path=LeftViewModel}"/>
             <GridSplitter   Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             <!--В зависимости от типа в правой панели отображается FolderView / ImageView / HexView / TextView-->
-            <ContentControl Grid.Column="2" Content="{Binding Path=ContentViewModel}"/>
+            <ContentControl Grid.Column="2" Content="{Binding Path=RightViewModel}"/>
 
         </Grid>
     </DockPanel>
