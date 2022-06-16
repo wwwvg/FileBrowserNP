@@ -10,9 +10,6 @@ using FileBrowserNP.Commands;
 using FileBrowserNP.Views.Dialogs;
 using FileBrowserNP.ViewModels.Dialogs;
 using Microsoft.VisualBasic.FileIO;
-using System.Linq;
-using FileBrowserNP.ViewModels.Dialogs;
-using System.Diagnostics;
 
 namespace FileBrowserNP.ViewModels
 {
@@ -434,6 +431,7 @@ namespace FileBrowserNP.ViewModels
             return string.Empty;
         }
 
+        #region ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
         //*******************************************************************************************************************************************************
         private void OpenFile()
         {
@@ -474,4 +472,5 @@ namespace FileBrowserNP.ViewModels
             MessageStatusBar = $"[{label}]  свободно {freeSpace} из {totalSpace}";
         }
     }
+    #endregion
 }
