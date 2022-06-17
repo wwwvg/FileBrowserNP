@@ -221,7 +221,6 @@ namespace FileBrowserNP.ViewModels
             if (e.SelectedItem != null && e.SelectedItem is Drive drive)
             {
                 LoadLeftFolderView(drive.Name, false, false);
-    //            RightViewModel = new BackViewModel();
                 CanAddFolder = true;
                 _previousSelectedIndexes.Push(e.SelectedIndex);                                                                                   // <======================== PUSH
                 RightViewModel = new BackViewModel();
@@ -310,12 +309,15 @@ namespace FileBrowserNP.ViewModels
                     }
 
                     if (/*type == typeof(HexFile) || */ type == typeof(TextFile) || type == typeof(ImageFile))
+                    {
                         OpenFile();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 ShowErrorMessage(ex.Message);
+                
             }
         }
 
