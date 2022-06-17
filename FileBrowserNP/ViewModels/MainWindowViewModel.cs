@@ -209,17 +209,23 @@ namespace FileBrowserNP.ViewModels
             {
                 Drive drive = (Drive)e.SelectedItem;
                 ImageStatusBar = null;
-                ShowDriveInfoMessage(drive.Label, drive.FreeSpace, drive.TotalSpace);                                              
-                LoadRightFolderView(drive.Name);
+                ShowDriveInfoMessage(drive.Label, drive.FreeSpace, drive.TotalSpace);    
+                if(!_isDriveDoubleClicked)
+                    LoadRightFolderView(drive.Name);
+                _isDriveDoubleClicked = false;
             }
         }
+        bool _isDriveDoubleClicked = false;
         public void OnDriveDoubleClicked(object sender, SelectedDriveEventArgs e)  // по диску щелкнули два раза -> создаем вместо дисков каталоги, справа дочерние каталоги
         {
             if (e.SelectedItem != null && e.SelectedItem is Drive drive)
             {
                 LoadLeftFolderView(drive.Name, false, false);
+    //            RightViewModel = new BackViewModel();
                 CanAddFolder = true;
                 _previousSelectedIndexes.Push(e.SelectedIndex);                                                                                   // <======================== PUSH
+                RightViewModel = new BackViewModel();
+                _isDriveDoubleClicked = true;
             }
         }
         #endregion
@@ -267,6 +273,7 @@ namespace FileBrowserNP.ViewModels
         }
 
         //*******************************    ДВОЙНОЙ ЩЕЛЧОК ПО ФАЙЛУ     ***********************************************************************************
+        bool _isBackDoubleClicked = false;
         public void OnFileDoubleClicked(object sender, SelectedItemEventArgs e)                     
         {
             try
@@ -280,12 +287,14 @@ namespace FileBrowserNP.ViewModels
                     if (type == typeof(Folder))
                     {
                         LoadLeftFolderView(GetSelectedItemPath(), false);
+                        RightViewModel = new BackViewModel();
                         _previousSelectedIndexes.Push(e.SelectedIndex);                                              // <======================== PUSH
                         return;
                     }
 
                     if (type == typeof(Back))
                     {
+                        _isBackDoubleClicked = true;
 
                         if (GetSelectedItemParent() != null)
                         {
@@ -316,12 +325,18 @@ namespace FileBrowserNP.ViewModels
         {
             if (e.SelectedItem is Back)
             {
-                RightViewModel = new BackViewModel();            //  отображение пустой правой панели
+                if (!_isBackDoubleClicked)
+                {
+                    RightViewModel = new BackViewModel();            //  отображение пустой правой панели
+                    
+                }
                 CanDeleteItem = false;
                 return;
             }
             else
                 CanDeleteItem = true;
+
+            _isBackDoubleClicked = false;
 
             try
             {
@@ -353,6 +368,7 @@ namespace FileBrowserNP.ViewModels
             catch(Exception ex)
             {
                 ShowErrorMessage(ex.Message);
+                RightViewModel = new BackViewModel();
             }
         }
 

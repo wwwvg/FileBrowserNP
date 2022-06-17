@@ -24,27 +24,6 @@ namespace FileBrowserNP.ViewModels
             int index = (selectedIndex > -1 && selectedIndex < Files.Count) ? selectedIndex : 0;
             if (isLeftPanelView && Files.Count > 0)
                 SelectedFile = Files[selectedIndex];
-
-            //SetFoldersAndFiles(path, !isBack);
-            //if (isLeftPanelView && isBack && Files.Count > 0)
-            //{
-            //    
-            //    if (Files[index] is Back)
-            //        SelectedFile = (Back)Files[index];
-
-            //    if (Files[index] is Folder)
-            //        SelectedFile = (Folder)Files[index];
-            //}
-            //else if (isLeftPanelView && Files.Count > 0)
-            //{
-            //    if (Files[0] is Back)
-            //    {
-            //        SelectedFile = (Back)Files[0];
-            //    }
-
-            //    if (Files[0] is Folder)
-            //        SelectedFile = (Folder)Files[0];
-            //}
         }
 
         #region СВОЙСТВА
